@@ -3,6 +3,11 @@ import Tile from './components/Tile';
 import PlayField from './components/PlayField';
 
 function App() {
+  [
+    [],
+    [],
+    [],
+  ]
   return (
     <>
       <PlayField/>

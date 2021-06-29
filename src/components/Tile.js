@@ -1,13 +1,20 @@
 import { useState } from 'react'
 
 const Tile = () => {
-  const props = {
+  const tile = {
     color: 'red',
-    place: 0,
-    neighbors: [1, 5]
+    place: 'random',
+    id: 0,
+    neighbors: [1, 5],
+    fn: () => {
+      
+    }
   }
   return (
-    <div style={{width: 50, height: 50, backgroundColor: 'red'}}>
+    <div 
+    style={{width: 50, height: 50, backgroundColor: 'red'}}
+    onClick={() => alert(1)}
+    >
      
     </div>
   )
