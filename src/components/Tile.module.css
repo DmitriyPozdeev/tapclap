@@ -1,0 +1,12 @@
+.tile {
+  border: 1px white solid;
+}
+.red {
+  background-color: red;
+}
+.green {
+  background-color: green;
+}
+.blue {
+  background-color: blue;
+}

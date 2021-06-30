@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import styles from './Tile.module.css'
 
-const Tile = () => {
+const Tile = (props) => {
+  const { color, adress } = props
   const tile = {
     color: 'red',
     place: 'random',
@@ -12,10 +14,11 @@ const Tile = () => {
   }
   return (
     <div 
-    style={{width: 50, height: 50, backgroundColor: 'red'}}
-    onClick={() => alert(1)}
+      className={`${styles[color]} ${styles.tile}`}
+      style={{width: 50, height: 50}}
+      onClick={() => console.log(adress, color)}
     >
-     
+     {adress}
     </div>
   )
 }

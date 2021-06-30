@@ -1,33 +1,30 @@
-import { useState } from 'react'
+import { useState, useEffect, useContext } from 'react'
+import { Context } from '../index.js'
+import Tile from './Tile'
+import styles from './PlayField.module.css'
 
 const PlayField = () => {
-  const props = {
-    size: [5, 4],
-    tails: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},],
-    emptyPlaces: [
-      [
-        { 
-          color: 'red'
-        },
-        { 
-          color: 'green'
-        },
-        { 
-          color: 'green'
-        },
-        { 
-          color: 'blue'
-        }
-      ],
-      [{},{},{},{}],
-      [{},{},{},{}],
-      [{},{},{},{}],
-    ]
-  }
+  const { root } = useContext(Context)
+  const {field} = root.playFieldStore
+  const { tilesList } = root.tileStore
+
+  useEffect(() => {
+    console.log( tilesList )
+    console.log( field )
+    
+
+  },[field])
+  root.initField()
+  root.initTilesList()
+
   return (
-    <div style={{width: 550, height: 570, backgroundColor: 'grey', border: 'solid black 1px'}}>
-     
+    <div 
+      className={styles.field}
+      onClick={(e) => console.log(e.clientX, e.clientY)}
+    >
+      <Tile color="red" address="0/0"/>
     </div>
+   
   )
 }
 
