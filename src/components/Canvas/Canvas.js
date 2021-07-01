@@ -1,11 +1,17 @@
-import { useState, useRef } from 'react'
+import { useState,  useRef, useEffect, useContext } from 'react'
+import { Context } from '../../index'
 import styles from './Canvas.module.css'
 
-const Canvas = () => {
-  const canvasRef = useRef(null);
-  const canvas = canvasRef.current
-  const ctx = canvas.getContext('2d');
-  ctx.fillRect(0,0, 100, 100);
+const Canvas = (props) => {
+  const { root } = useContext(Context)
+  const canvasRef = useRef(null)
+  
+  useEffect(() => {
+    const canvas = canvasRef.current
+    const context = canvas.getContext('2d')
+    root.start(context)  
+  }, [root])
+  
   return (
     <div className={styles.wrap}>
       <canvas
