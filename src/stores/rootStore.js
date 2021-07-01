@@ -9,6 +9,11 @@ export default class RootStore {
     this.playFieldStore = new PlayFieldStore(this)
     makeAutoObservable(this)
   }
+  delete(id) {
+     this.tileStore.tilesList.filter((item) => {
+       return item.id !== id
+     })
+  }
   initTilesList() {
     const amountTiles = this.playFieldStore.fieldSize.rows * 
       this.playFieldStore.fieldSize.colls
@@ -21,7 +26,6 @@ export default class RootStore {
   }
   initField() {
     this.playFieldStore.field = []
-    console.log(this.playFieldStore.fieldSize)
     for (let i = 0; i < this.playFieldStore.fieldSize.rows; i++) {
       for (let j = 0; j < this.playFieldStore.fieldSize.colls; j++) {
         this.playFieldStore.field.push(

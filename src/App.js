@@ -1,15 +1,10 @@
 import './App.css';
-import PlayField from './components/PlayField';
+import Canvas from './components/Canvas/Canvas';
 
 function App() {
   return (
     <>
-      <PlayField/>
-      <button
-        onClick={() => console.log(1)}
-      >
-        Перемешать
-      </button>
+      <Canvas/>
     </>
   );
 }

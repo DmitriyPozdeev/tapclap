@@ -20,9 +20,22 @@ const PlayField = () => {
   return (
     <div 
       className={styles.field}
-      onClick={(e) => console.log(e.clientX, e.clientY)}
+      onClick={(e) => console.log(e.target.id)}
     >
-      <Tile color="red" address="0/0"/>
+      {
+        tilesList.map((tile, index) => {
+          return <Tile 
+          color={tile.color} 
+          address={tile.address}
+          id={index}
+          />
+        })
+      }
+    <button
+        onClick={root.delete(2)}
+      >
+        Перемешать
+      </button>  
     </div>
    
   )
