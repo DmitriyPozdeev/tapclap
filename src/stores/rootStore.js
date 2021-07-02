@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, computed } from 'mobx'
 import TileStore from './TileStore'
 import PlayFieldStore from './PlayFieldStore'
 import Tile from './Tile'
@@ -11,26 +11,32 @@ import yellow from '../assets/main/blocks/yellow.png'
 export default class RootStore {
   constructor() {
     this.canvas = null
-    this.blueBlock = new Image()
-    this.greenBlock = new Image()
-    this.purpleBlock = new Image()
-    this.redBlock = new Image()
-    this.yellowBlock = new Image()
+    this.blockSize = 70
+    this.rows = 10
+    this.colls = 8
     this.tileStore = new TileStore(this)
     this.playFieldStore = new PlayFieldStore(this)
-    makeAutoObservable(this)
+    makeAutoObservable(this, {
+      fieldSize: computed
+    }) 
   }
+
   initGame(canvas) {
     this.canvas = canvas
   }
-  async preloadAssets() {
-    this.blueBlock.src = blue
-    this.greenBlock.src = green
-    this.purpleBlock.src = purple
-    this.redBlock.src = red
-    this.yellowBlock.src = yellow
-    this.yellowBlock.addEventListener("load", () => {
-      this.run()
+  randomNum(max) {
+    return Math.floor(Math.random() * max)
+  }
+  randomSrc() {
+    const colors =[red, green, blue, purple, yellow]
+    return colors[this.randomNum(5)]
+  }
+  createBlock(src) {
+    return new Promise((resolve, reject) => {
+      let block = new Image()
+      block.src = src
+      block.onload = () => resolve(block);
+      block.onerror = () => reject(src)
     })
   }
   run() {
@@ -38,25 +44,21 @@ export default class RootStore {
       this.render()
     })
   } 
-  render() {
-    this.canvas.drawImage(this.blueBlock, 0 , 0, 100, 100)
-    this.canvas.drawImage(this.purpleBlock, 101 , 0, 100, 100)
-    this.canvas.drawImage(this.redBlock, 202 , 0, 100, 100)
-    this.canvas.drawImage(this.yellowBlock, 303 , 0, 100, 100) 
-    this.canvas.drawImage(this.greenBlock, 404 , 0, 100, 100)
-    this.canvas.drawImage(this.blueBlock, 505 , 0, 100, 100)
+  render(srcArray) {
+    const arr = [red, green, purple, red, green, yellow, red, green, purple, red, green, yellow, red, green, purple, red, green, yellow]
+    const itr = arr.map((src) => this.createBlock(this.randomSrc())) // itr - массив промисов
+    Promise.all(itr).then((blocks) => { //blocks массив значений от всех промисов, которые были ему переданы
+      for ( let block of blocks) {
+        const {x, y} = this.getRandomEmptyCell().coordinates
+        this.canvas.drawImage(block, x , y, this.blockSize, this.blockSize)
+      }
+    })
   }
   start(canvas) {
     this.initGame(canvas)
-    this.preloadAssets()
+    this.initField()
     this.run()
   }
-
-
-
-
-
-
   delete(id) {
      this.tileStore.tilesList.filter((item) => {
        return item.id !== id
@@ -72,8 +74,19 @@ export default class RootStore {
       )
     }
   }
+  getRandomEmptyCell() {
+    const emptyCells = this.playFieldStore.field.filter( item => 
+      item.address.isEmpty 
+    )
+    const numCell = this.randomNum(emptyCells.length)
+    emptyCells[numCell].address.isEmpty = false
+    return emptyCells[numCell]
+  }
+
   initField() {
     this.playFieldStore.field = []
+    let x = 0
+    let y = 0
     for (let i = 0; i < this.playFieldStore.fieldSize.rows; i++) {
       for (let j = 0; j < this.playFieldStore.fieldSize.colls; j++) {
         this.playFieldStore.field.push(
@@ -81,10 +94,11 @@ export default class RootStore {
             address: {
               row: i,
               coll: j,
+              isEmpty: true
             },
             coordinates: {
-              x: null, 
-              y: null,
+              x: i * this.blockSize + 1, 
+              y: j * this.blockSize + 1,
             },
             tileId: null,
           }
@@ -95,5 +109,10 @@ export default class RootStore {
   mixTiles() {
 
   }
-  
+  get fieldSize() {
+    return {
+      width: this.colls * this.blockSize + this.colls,
+      height: this.rows * this.blockSize + this.rows,
+    }
+  }
 }

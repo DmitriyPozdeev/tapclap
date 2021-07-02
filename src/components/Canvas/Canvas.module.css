@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   margin: 100px 0 0 40px;
-  background: center center url('../../assets/main/поле/field.png');
+  /*background: center center url('../../assets/main/поле/field.png');*/
   background-size: cover;
   align-items: center;
   width: 570px;

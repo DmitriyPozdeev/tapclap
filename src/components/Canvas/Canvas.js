@@ -4,6 +4,7 @@ import styles from './Canvas.module.css'
 
 const Canvas = (props) => {
   const { root } = useContext(Context)
+  const { fieldSize } = root
   const canvasRef = useRef(null)
   
   useEffect(() => {
@@ -13,12 +14,12 @@ const Canvas = (props) => {
   }, [root])
   
   return (
-    <div className={styles.wrap}>
+    <div className={styles.wrap} styles={{with: fieldSize.width, height: fieldSize.height}}>
       <canvas
         ref={canvasRef}
         className={styles.field}
-        width={544} 
-        height={605}>
+        width={fieldSize.width} 
+        height={fieldSize.height}>
       </canvas>
     </div>
   )
