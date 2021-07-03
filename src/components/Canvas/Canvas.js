@@ -4,22 +4,21 @@ import styles from './Canvas.module.css'
 
 const Canvas = (props) => {
   const { root } = useContext(Context)
-  const { fieldSize } = root
+  const { style } = root.field
   const canvasRef = useRef(null)
-  
+
   useEffect(() => {
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
-    root.start(context)  
-  }, [root])
-  
+    root.start(context)   
+  }, [])
   return (
-    <div className={styles.wrap} styles={{with: fieldSize.width, height: fieldSize.height}}>
+    <div className={styles.wrap} >
       <canvas
         ref={canvasRef}
         className={styles.field}
-        width={fieldSize.width} 
-        height={fieldSize.height}>
+        width={root.field.style.width}  
+        height={root.field.style.height}> 
       </canvas>
     </div>
   )
