@@ -3,26 +3,19 @@ import { makeAutoObservable, computed } from 'mobx'
 export default class FieldStore {
   constructor(rootStore) {
     this.root = rootStore
-    this.cells = null
+    this.cells = []
     this.size = {
       rows: 5,
-      colls: 4,
+      cols: 4,
     }
-    //this.style = {
-    //  width: null,
-    //  height: null,
-    //}
     makeAutoObservable(this, {
       style: computed,
+      tilesAmount: computed,
     })
   }
-  setEmptyCell(num) {
-    this.cells[num].isEmpty = false
-  }
   initCells() {
-    this.cells = []
     for (let i = 0; i < this.size.rows; i++) {
-      for (let j = 0; j < this.size.colls; j++) {
+      for (let j = 0; j < this.size.cols; j++) {
         this.cells.push(
           {
             address: {
@@ -33,17 +26,27 @@ export default class FieldStore {
               x: j * (this.root.tile.size + 1), 
               y: i * (this.root.tile.size + 1),
             },
-            isEmpty: true,
+            colorId: null,
           }
         ) 
       }
     }
   }
-
+  fillRandomEmptyCell(fill) {
+    const emptyCells = this.cells.filter( item => 
+      item.colorId === null
+    )
+    const numCell = this.root.randomNum(emptyCells.length)
+    emptyCells[numCell].colorId = fill
+    return emptyCells[numCell]
+  }
   get style() {
     return {
-      width: this.size.colls * this.root.tile.size + this.size.colls,
+      width: this.size.cols * this.root.tile.size + this.size.cols,
       height: this.size.rows * this.root.tile.size + this.size.rows,
     }
+  }
+  get tilesAmount() {
+    return this.size.rows * this.size.cols
   }
 }

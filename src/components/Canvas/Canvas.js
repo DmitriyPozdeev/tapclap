@@ -13,12 +13,20 @@ const Canvas = (props) => {
     root.start(context)   
   }, [])
   return (
-    <div className={styles.wrap} >
+    <div 
+      className={styles.wrap} 
+      style={{
+        width: root.field.style.width + 4,
+        height: root.field.style.height + 4,
+      }}
+    >
       <canvas
         ref={canvasRef}
         className={styles.field}
         width={root.field.style.width}  
-        height={root.field.style.height}> 
+        height={root.field.style.height}
+        //onClick={(e) => root.click(e)}
+      > 
       </canvas>
     </div>
   )
