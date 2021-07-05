@@ -37,7 +37,7 @@ export default class RootStore {
       x: e.clientX - this.canvasCoordinates.x,
       y: e.clientY - this.canvasCoordinates.y,
     }
-    const cell = this.field.cells.find(cell => {
+    const clickedCell = this.field.cells.find(cell => {
       return (
         (cell.coordinates.xs <= event.x) &&  
         (cell.coordinates.xe >= event.x) &&
@@ -45,7 +45,28 @@ export default class RootStore {
         (cell.coordinates.ye >= event.y)
       )
     })
-    console.log(cell.colorId, cell.address.row, cell.address.col)
+    const index = this.field.cells.indexOf(clickedCell)
+    const neighboards = {
+      top: this.field.cells[index - this.field.size.cols],
+      right: this.field.cells[index + 1],
+      bottom: this.field.cells[index + this.field.size.cols],
+      left: this.field.cells[index - 1],
+    } 
+    console.log(neighboards)
+    //const neighboards = this.field.cells.filter(cell => {
+    //  return (
+    //    (cell.address.row === clickedCell.address.row + 1 &&
+    //    cell.address.col === clickedCell.address.col) ||
+    //    (cell.address.row === clickedCell.address.row - 1 &&
+    //    cell.address.col === clickedCell.address.col) ||
+    //    (cell.address.col === clickedCell.address.col + 1 &&  
+    //    cell.address.row === clickedCell.address.row) || 
+    //    (cell.address.col === clickedCell.address.col - 1 &&
+    //    cell.address.row === clickedCell.address.row)
+    //  )
+    //})
+    //console.log(neighboards.filter(cell => cell.colorId === clickedCell.colorId))//clickedCell.colorId, clickedCell.address.row, clickedCell.address.col)
+    //this.field.clearTile(cell.coordinates.xs, cell.coordinates.ys)
   }
   
   run() {

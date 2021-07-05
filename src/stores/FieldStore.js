@@ -38,6 +38,9 @@ export default class FieldStore {
     this.cells.map(cell => cell.colorId = null)
     this.root.context.clearRect(0, 0, this.root.canvas.width, this.root.canvas.height)
   }
+  clearTile(x, y) { 
+    this.root.context.clearRect(x, y, this.root.tile.size, this.root.tile.size)
+  }
   fillRandomEmptyCell(fill) {
     const emptyCells = this.cells.filter( item => 
       item.colorId === null
