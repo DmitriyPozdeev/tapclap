@@ -1,10 +1,10 @@
-import { useState,  useRef, useEffect, useContext } from 'react'
+import { useRef, useEffect, useContext } from 'react'
 import { Context } from '../../index'
 import styles from './Canvas.module.css'
 
 const Canvas = (props) => {
   const { root } = useContext(Context)
-  const { style } = root.field
+  //const { style } = root.field
   const canvasRef = useRef(null)
 
   useEffect(() => {
