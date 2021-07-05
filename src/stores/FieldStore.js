@@ -10,7 +10,7 @@ export default class FieldStore {
     }
     makeAutoObservable(this, {
       style: computed,
-      tilesAmount: computed,
+      cellsAmount: computed,
     })
   }
   initCells() {
@@ -20,17 +20,23 @@ export default class FieldStore {
           {
             address: {
               row: i,
-              coll: j,
+              col: j,
             },
             coordinates: {
-              x: j * (this.root.tile.size + 1), 
-              y: i * (this.root.tile.size + 1),
+              xs: j * (this.root.tile.size + 1), 
+              ys: i * (this.root.tile.size + 1),
+              xe: j * (this.root.tile.size + 1) + this.root.tile.size,
+              ye: i * (this.root.tile.size + 1) + this.root.tile.size,
             },
             colorId: null,
           }
         ) 
       }
     }
+  }
+  clearField() {
+    this.cells.map(cell => cell.colorId = null)
+    this.root.context.clearRect(0, 0, this.root.canvas.width, this.root.canvas.height)
   }
   fillRandomEmptyCell(fill) {
     const emptyCells = this.cells.filter( item => 
@@ -46,7 +52,7 @@ export default class FieldStore {
       height: this.size.rows * this.root.tile.size + this.size.rows,
     }
   }
-  get tilesAmount() {
+  get cellsAmount() {
     return this.size.rows * this.size.cols
   }
 }

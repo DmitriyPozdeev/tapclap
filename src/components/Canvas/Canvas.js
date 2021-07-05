@@ -10,7 +10,7 @@ const Canvas = (props) => {
   useEffect(() => {
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
-    root.start(context)   
+    root.start({canvas, context})
   }, [])
   return (
     <div 
@@ -25,7 +25,7 @@ const Canvas = (props) => {
         className={styles.field}
         width={root.field.style.width}  
         height={root.field.style.height}
-        //onClick={(e) => root.click(e)}
+        onClick={(e) => root.click(e)}
       > 
       </canvas>
     </div>
