@@ -33,6 +33,34 @@ export default class RootStore {
     this.canvas = canvas
     this.context = context
   }
+  filterColor(id) {
+    return this.field.cells.slice().filter(cell => {
+      return cell.colorId === id
+    })
+  } 
+  findNeighbors(currentCell) {
+   const group = this.filterColor(currentCell.colorId)
+
+    const neighbors = group.filter(cell => {
+      return (
+        (cell.address.row === currentCell.address.row + 1 &&
+        cell.address.col === currentCell.address.col) ||
+        (cell.address.row === currentCell.address.row - 1 &&
+        cell.address.col === currentCell.address.col) ||
+        (cell.address.col === currentCell.address.col + 1 &&  
+        cell.address.row === currentCell.address.row) || 
+        (cell.address.col === currentCell.address.col - 1 &&
+        cell.address.row === currentCell.address.row)
+      )
+    })
+    return neighbors
+  }
+  find(currentCell) {
+    const group = this.filterColor(currentCell.colorId)
+    const index = this.field.cells.indexOf(currentCell)
+    const length = this.field.cells.length
+    console.log(index%4, index/4)
+  }
   click(e) {
     const event = {
       x: e.clientX - this.canvasCoordinates.x,
@@ -46,35 +74,8 @@ export default class RootStore {
         (cell.coordinates.ye >= event.y)
       )
     })
-   // const index = this.field.cells.indexOf(clickedCell)
-   //  const neighboards = {
-   //   top: this.field.cells[index - this.field.size.cols],
-   //   right: this.field.cells[index + 1],
-   //   bottom: this.field.cells[index + this.field.size.cols],
-   //   left: this.field.cells[index - 1],
-   // } 
-   // console.log(neighboards)
-    const neighboards = this.field.cells.filter(cell => {
-      return (
-        (cell.address.row === clickedCell.address.row + 1 &&
-        cell.address.col === clickedCell.address.col) ||
-        (cell.address.row === clickedCell.address.row - 1 &&
-        cell.address.col === clickedCell.address.col) ||
-        (cell.address.col === clickedCell.address.col + 1 &&  
-        cell.address.row === clickedCell.address.row) || 
-        (cell.address.col === clickedCell.address.col - 1 &&
-        cell.address.row === clickedCell.address.row)
-      )
-    })
-    console.log(neighboards.filter(cell => cell.colorId === clickedCell.colorId))//clickedCell.colorId, clickedCell.address.row, clickedCell.address.col)
-    //this.field.clearTile(cell.coordinates.xs, cell.coordinates.ys)
-    const group = this.field.cells.slice().filter(cell => {
-      return cell.colorId === clickedCell.colorId
-    })
-    console.log(`кликнул по - строка - ${clickedCell.address.row}, столбец ${clickedCell.address.col}`)
-    group.map(item => console.log(`-------------строка - ${item.address.row}, столбец ${item.address.col}`))
-  }
-  
+    this.find(clickedCell)
+  }  
   run() {
     window.requestAnimationFrame(() => {
       this.render()
