@@ -16,7 +16,7 @@ export default class FieldStore {
   
   calcIndexesNeighbors = (index) => {
     const indexes = []
-    const positionInRow = index%this.size.cols
+    const positionInRow = index % this.size.cols
     const neighbors = {
       top: index >= this.size.cols ? 
         index - this.size.cols : 
@@ -70,8 +70,11 @@ export default class FieldStore {
     this.cells.map(cell => cell.colorId = null)
     this.root.context.clearRect(0, 0, this.root.canvas.width, this.root.canvas.height)
   }
-  clearTile(x, y) { 
-    this.root.context.clearRect(x, y, this.root.tile.size, this.root.tile.size)
+  clearTile(index) { 
+    const {xs, ys} = this.cells[index].coordinates
+    this.cells[index].colorId = null
+    this.root.context.clearRect(xs, ys, this.root.tile.size, this.root.tile.size)
+    console.log(this.cells)
   }
   fillRandomEmptyCell(fill) {
     const emptyCells = this.cells.filter( item => 

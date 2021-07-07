@@ -82,7 +82,8 @@ export default class RootStore {
       )
     })
     const { index } = clickedCell
-    this.bfs(index)
+    const arr = this.bfs(index)
+    arr.map( item => this.field.clearTile(item))
   }  
   run() {
     window.requestAnimationFrame(() => {
