@@ -13,6 +13,31 @@ export default class FieldStore {
       cellsAmount: computed,
     })
   }
+  
+  calcIndexesNeighbors = (index) => {
+    const indexes = []
+    const positionInRow = index%this.size.cols
+    const neighbors = {
+      top: index >= this.size.cols ? 
+        index - this.size.cols : 
+        null,
+      bottom: index + this.size.cols < this.cellsAmount ? 
+        index + this.size.cols : 
+        null,
+      left: positionInRow !== 0 ? 
+        index - 1 : 
+        null,
+      right: positionInRow !== (this.size.cols - 1) ? 
+        index + 1 : 
+        null, 
+    }
+    for (let key in neighbors) {
+      if (neighbors[key] !== null) {
+        indexes.push(neighbors[key])
+      }
+    }
+    return indexes
+  }
   initCells() {
     for (let i = 0; i < this.size.rows; i++) {
       for (let j = 0; j < this.size.cols; j++) {
@@ -29,10 +54,17 @@ export default class FieldStore {
               ye: i * (this.root.tile.size + 1) + this.root.tile.size,
             },
             colorId: null,
+            neighbors: [],
+            index:  null
           }
         ) 
       }
     }
+    this.cells.map( (cell, i) => {
+      cell.index = i
+      cell.neighbors = this.calcIndexesNeighbors(i)
+    })
+    console.log(this.cells)
   }
   clearField() {
     this.cells.map(cell => cell.colorId = null)
@@ -49,6 +81,7 @@ export default class FieldStore {
     emptyCells[numCell].colorId = fill
     return emptyCells[numCell]
   }
+
   get style() {
     return {
       width: this.size.cols * this.root.tile.size + this.size.cols,

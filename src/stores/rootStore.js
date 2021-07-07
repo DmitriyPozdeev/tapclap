@@ -38,29 +38,36 @@ export default class RootStore {
       return cell.colorId === id
     })
   } 
-  findNeighbors(currentCell) {
-   const group = this.filterColor(currentCell.colorId)
 
-    const neighbors = group.filter(cell => {
-      return (
-        (cell.address.row === currentCell.address.row + 1 &&
-        cell.address.col === currentCell.address.col) ||
-        (cell.address.row === currentCell.address.row - 1 &&
-        cell.address.col === currentCell.address.col) ||
-        (cell.address.col === currentCell.address.col + 1 &&  
-        cell.address.row === currentCell.address.row) || 
-        (cell.address.col === currentCell.address.col - 1 &&
-        cell.address.row === currentCell.address.row)
-      )
+  bfs(index) {
+    const adj = {}
+    const validColorCells = this
+      .filterColor(this.field.cells[index].colorId)
+
+    validColorCells.map(cell => {
+      return adj[cell.index] = cell.neighbors
     })
-    return neighbors
+
+    const set = new Set(validColorCells.map(item => item.index))
+    const checkColor = (index) => set.has(index)
+    let result = []
+	  let queue = [index]
+    let visited = new Set([])
+    
+	  while(queue.length > 0) {
+	  	let v = queue.shift() 
+	  	for(let neighbor of adj[v]) {
+	  		if(!visited.has(neighbor) && checkColor(neighbor)) {                     
+	  			visited.add(neighbor)
+          queue.push(neighbor)
+          result.push(neighbor)
+	  		}
+	  	} 
+	  }
+    console.log(`Результат ${result}`)
+	  return result
   }
-  find(currentCell) {
-    const group = this.filterColor(currentCell.colorId)
-    const index = this.field.cells.indexOf(currentCell)
-    const length = this.field.cells.length
-    console.log(index%4, index/4)
-  }
+  
   click(e) {
     const event = {
       x: e.clientX - this.canvasCoordinates.x,
@@ -74,7 +81,8 @@ export default class RootStore {
         (cell.coordinates.ye >= event.y)
       )
     })
-    this.find(clickedCell)
+    const { index } = clickedCell
+    this.bfs(index)
   }  
   run() {
     window.requestAnimationFrame(() => {
