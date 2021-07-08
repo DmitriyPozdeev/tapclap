@@ -1,5 +1,6 @@
 import './App.css';
 import Canvas from './components/Canvas/Canvas';
+import Points from './components/Points/Points'
 import {useContext} from 'react'
 import {Context} from './index.js'
 
@@ -13,6 +14,7 @@ function App() {
       >
         Перемешать
       </button>
+      <Points/>
     </>
   );
 }

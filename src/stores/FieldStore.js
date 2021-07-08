@@ -14,10 +14,12 @@ export default class FieldStore {
     })
   }
   
-  calcIndexesNeighbors = (index) => {
-    const indexes = []
+  getCellCoor(index) {
+    return this.cells[index].coor
+  }
+  getNeighbors = (index) => {
     const positionInRow = index % this.size.cols
-    const neighbors = {
+    return {
       top: index >= this.size.cols ? 
         index - this.size.cols : 
         null,
@@ -31,12 +33,20 @@ export default class FieldStore {
         index + 1 : 
         null, 
     }
+  }
+  getNeighborsIndexes = (index) => {
+    const indexes = []
+    const neighbors = this.getNeighbors(index)
     for (let key in neighbors) {
       if (neighbors[key] !== null) {
         indexes.push(neighbors[key])
       }
     }
     return indexes
+  }
+  
+  Cell(row, col) {
+    
   }
   initCells() {
     for (let i = 0; i < this.size.rows; i++) {
@@ -47,11 +57,11 @@ export default class FieldStore {
               row: i,
               col: j,
             },
-            coordinates: {
-              xs: j * (this.root.tile.size + 1), 
-              ys: i * (this.root.tile.size + 1),
-              xe: j * (this.root.tile.size + 1) + this.root.tile.size,
-              ye: i * (this.root.tile.size + 1) + this.root.tile.size,
+            coor: {
+              xs: j * (this.root.tile.size), 
+              ys: i * (this.root.tile.size),
+              xe: j * (this.root.tile.size) + this.root.tile.size,
+              ye: i * (this.root.tile.size) + this.root.tile.size,
             },
             colorId: null,
             neighbors: [],
@@ -60,35 +70,46 @@ export default class FieldStore {
         ) 
       }
     }
-    this.cells.map( (cell, i) => {
+    this.cells.map((cell, i) => {
       cell.index = i
-      cell.neighbors = this.calcIndexesNeighbors(i)
+      return cell.neighbors = this.getNeighborsIndexes(i)
     })
-    console.log(this.cells)
+  }
+  fillCells() {
+    for (let i = 0; i < this.cellsAmount; i++) {
+      const {tile, colorId} = this.root.tile.list[this.root.randomNum(5)]
+      const {xs, ys} = this.fillRandomEmptyCell(colorId)
+      this.root.context.drawImage(tile, xs, ys, this.root.tile.size, this.root.tile.size)
+    }
   }
   clearField() {
     this.cells.map(cell => cell.colorId = null)
-    this.root.context.clearRect(0, 0, this.root.canvas.width, this.root.canvas.height)
+    this.root.context.clearRect(
+      0, 0, this.root.canvas.width, this.root.canvas.height
+    )
   }
+
   clearTile(index) { 
-    const {xs, ys} = this.cells[index].coordinates
+    const {xs, ys} =  this.getCellCoor(index)
     this.cells[index].colorId = null
-    this.root.context.clearRect(xs, ys, this.root.tile.size, this.root.tile.size)
-    console.log(this.cells)
+    this.root.context.clearRect(
+      xs, ys, this.root.tile.size, this.root.tile.size
+    )
   }
-  fillRandomEmptyCell(fill) {
+  fillRandomEmptyCell(colorId) {
     const emptyCells = this.cells.filter( item => 
       item.colorId === null
     )
     const numCell = this.root.randomNum(emptyCells.length)
-    emptyCells[numCell].colorId = fill
-    return emptyCells[numCell]
+    emptyCells[numCell].colorId = colorId
+    const { coor } = emptyCells[numCell]
+    return coor
   }
 
   get style() {
     return {
-      width: this.size.cols * this.root.tile.size + this.size.cols,
-      height: this.size.rows * this.root.tile.size + this.size.rows,
+      width: this.size.cols * this.root.tile.size,
+      height: this.size.rows * this.root.tile.size,
     }
   }
   get cellsAmount() {

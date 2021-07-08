@@ -16,8 +16,8 @@ const Canvas = (props) => {
     <div 
       className={styles.wrap} 
       style={{
-        width: root.field.style.width + 4,
-        height: root.field.style.height + 4,
+        width: root.field.style.width + 8,
+        height: root.field.style.height + 8,
       }}
     >
       <canvas

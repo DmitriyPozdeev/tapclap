@@ -13,6 +13,15 @@ export default class TailStore {
     this.list = []
     makeAutoObservable(this)
   }
+
+  createTile(src, colorId) {
+    return new Promise((resolve, reject) => {
+      let tile = new Image()
+      tile.src = src
+      tile.onload = () => resolve({tile, colorId});
+      tile.onerror = () => reject(tile.src)
+    })
+  }
   async preload() {
     const promises = this.srcs.reduce((acc, src, colorId) => {
       return [...acc, this.createTile(src, colorId)]
@@ -23,12 +32,7 @@ export default class TailStore {
       }
     })
   } 
-  createTile(src, colorId) {
-    return new Promise((resolve, reject) => {
-      let tile = new Image()
-      tile.src = src
-      tile.onload = () => resolve({tile, colorId});
-      tile.onerror = () => reject(tile.src)
-    })
+  moveTileTo(indexS, indexE) {
+    
   }
 }
