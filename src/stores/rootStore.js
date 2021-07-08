@@ -114,7 +114,6 @@ export default class RootStore {
     const { index } = targetCell
     const deletedTiles = this.bfs(index)
     const lengthTiles = deletedTiles.length
-    console.log(deletedTiles)
     if (lengthTiles >= this.minDestroy && targetCell.colorId !== null) {
       deletedTiles.map( index => this.field.clearTile(index))
       this.setPoints(lengthTiles)

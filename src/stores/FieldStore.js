@@ -44,36 +44,36 @@ export default class FieldStore {
     }
     return indexes
   }
-  
-  Cell(row, col) {
-    
+  createCell(row, col) {
+    return {
+      address: {
+        row,
+        col,
+      },
+      coor: {
+        xs: col * (this.root.tile.size), 
+        ys: row * (this.root.tile.size),
+        xe: col * (this.root.tile.size) + this.root.tile.size,
+        ye: row * (this.root.tile.size) + this.root.tile.size,
+      },
+      colorId: null,
+      index: this.size.cols * row + col,
+      neighbors: this.getNeighborsIndexes(this.size.cols * row + col),
+     
+      increment: function() {
+        this.index+=1
+      }
+    }
   }
   initCells() {
     for (let i = 0; i < this.size.rows; i++) {
       for (let j = 0; j < this.size.cols; j++) {
         this.cells.push(
-          {
-            address: {
-              row: i,
-              col: j,
-            },
-            coor: {
-              xs: j * (this.root.tile.size), 
-              ys: i * (this.root.tile.size),
-              xe: j * (this.root.tile.size) + this.root.tile.size,
-              ye: i * (this.root.tile.size) + this.root.tile.size,
-            },
-            colorId: null,
-            neighbors: [],
-            index:  null
-          }
+          this.createCell(i, j)
         ) 
       }
     }
-    this.cells.map((cell, i) => {
-      cell.index = i
-      return cell.neighbors = this.getNeighborsIndexes(i)
-    })
+    console.log(this.cells)
   }
   fillCells() {
     for (let i = 0; i < this.cellsAmount; i++) {
