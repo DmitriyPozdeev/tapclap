@@ -6,15 +6,14 @@ import red from '../assets/main/blocks/red.png'
 import yellow from '../assets/main/blocks/yellow.png'
 
 export default class TailStore {
+  srcs = [red, green, blue, purple, yellow]
+  list = []
   constructor(rootStore) {
     this.root = rootStore
-    this.size = 70
-    this.srcs = [red, green, blue, purple, yellow]
-    this.list = []
     makeAutoObservable(this)
   }
 
-  createTile(src, colorId) {
+  initTile(src, colorId) {
     return new Promise((resolve, reject) => {
       let tile = new Image()
       tile.src = src
@@ -22,9 +21,9 @@ export default class TailStore {
       tile.onerror = () => reject(tile.src)
     })
   }
-  async preload() {
+  async preloadAvailableList() {
     const promises = this.srcs.reduce((acc, src, colorId) => {
-      return [...acc, this.createTile(src, colorId)]
+      return [...acc, this.initTile(src, colorId)]
     }, [])
     await Promise.all(promises).then((tiles) => {
       for ( let {tile, colorId} of tiles) {
@@ -32,7 +31,4 @@ export default class TailStore {
       }
     })
   } 
-  moveTileTo(indexS, indexE) {
-    
-  }
 }

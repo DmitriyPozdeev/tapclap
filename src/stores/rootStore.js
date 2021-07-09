@@ -3,22 +3,24 @@ import TileStore from './TileStore'
 import FieldStore from './FieldStore'
 
 export default class RootStore {
+  canvas = null
+  context = null
+  minDestroy = 2
+  points = 0
+  stepRatio = 50
+  mixCount = 3
+  attempts = 7 
   constructor() {
-    this.canvas = null
-    this.context = null
     this.tile = new TileStore(this)
     this.field = new FieldStore(this)
-    this.minDestroy = 2
-    this.points = 0
-    this.stepRatio = 50
-    this.mixCount = 3
-    this.attempts = 7 
-    
     makeAutoObservable(this, {
       canvasCoordinates: computed,
     }) 
   }
-
+  initGame({canvas, context}) {
+    this.canvas = canvas
+    this.context = context
+  }
   run() {
     window.requestAnimationFrame(() => {
       this.render()
@@ -31,7 +33,7 @@ export default class RootStore {
   start({canvas, context}) {
     this.initGame({canvas, context})
     this.field.initCells()
-    this.tile.preload()
+    this.tile.preloadAvailableList()
     .then(() => this.run())
   }
 
@@ -56,13 +58,10 @@ export default class RootStore {
     colorIds.map( colorId => {
       const {xs, ys} = this.field.fillRandomEmptyCell(colorId)
       const {tile} = this.tile.list[colorId]
-      this.context.drawImage(tile, xs, ys, this.tile.size, this.tile.size)
+      this.context.drawImage(tile, xs, ys, this.field.cellSize, this.field.cellSize)
     })
   }
-  initGame({canvas, context}) {
-    this.canvas = canvas
-    this.context = context
-  }
+  
   filterColor(id) {
     return this.field.cells.slice().filter(cell => {
       return cell.colorId === id
@@ -99,16 +98,17 @@ export default class RootStore {
   }
   
   click(e) {
-    const eventCoor = {
+    const eventCoord = {
       x: e.clientX - this.canvasCoor.x,
       y: e.clientY - this.canvasCoor.y,
     }
     const targetCell = this.field.cells.find(cell => {
+      const { xs, xe, ys, ye } = cell.getCoord()
       return (
-        (cell.coor.xs <= eventCoor.x) &&  
-        (cell.coor.xe >= eventCoor.x) &&
-        (cell.coor.ys <= eventCoor.y) &&  
-        (cell.coor.ye >= eventCoor.y)
+        (xs <= eventCoord.x) &&  
+        (xe >= eventCoord.x) &&
+        (ys <= eventCoord.y) &&  
+        (ye >= eventCoord.y)
       )
     })
     const { index } = targetCell
