@@ -13,21 +13,21 @@ export default class TailStore {
     makeAutoObservable(this)
   }
 
-  initTile(src, colorId) {
+  initTile(src) {
     return new Promise((resolve, reject) => {
       let tile = new Image()
       tile.src = src
-      tile.onload = () => resolve({tile, colorId});
+      tile.onload = () => resolve(tile);
       tile.onerror = () => reject(tile.src)
     })
   }
   async preloadAvailableList() {
     const promises = this.srcs.reduce((acc, src, colorId) => {
-      return [...acc, this.initTile(src, colorId)]
+      return [...acc, this.initTile(src)]
     }, [])
     await Promise.all(promises).then((tiles) => {
-      for ( let {tile, colorId} of tiles) {
-        this.list.push({tile, colorId})
+      for ( let tile of tiles) {
+        this.list.push(tile)
       }
     })
   } 

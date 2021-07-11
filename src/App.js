@@ -10,7 +10,7 @@ function App() {
     <>
       <Canvas/>
       <button
-        onClick={() => root.mixTiles()}
+        onClick={() => root.field.mixTiles()}
       >
         Перемешать
       </button>

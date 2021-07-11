@@ -10,6 +10,9 @@ export default class RootStore {
   stepRatio = 50
   mixCount = 3
   attempts = 7 
+  isAnimation = false
+  x = 0
+  y =0
   constructor() {
     this.tile = new TileStore(this)
     this.field = new FieldStore(this)
@@ -22,19 +25,30 @@ export default class RootStore {
     this.context = context
   }
   run() {
+    this.render()
     window.requestAnimationFrame(() => {
-      this.render()
+      this.run()
     })
   } 
   render() {
-    this.field.fillCells()
+  
+    
+   //   this.context.clearRect(
+   //     this.x, this.y, this.field.cellSize, this.field.cellSize
+   //   )
+   // this.x+=5
+   // this.y+=2
+    
   }
 
   start({canvas, context}) {
     this.initGame({canvas, context})
     this.field.initCells()
     this.tile.preloadAvailableList()
-    .then(() => this.run())
+    .then(() => {
+      this.field.fillCells()
+      this.run()
+    })
   }
 
   setPoints(amount) {
@@ -45,21 +59,6 @@ export default class RootStore {
   }
   setAttempts() {
     this.attempts -= 1
-  }
-  randomNum(max) {
-    return Math.floor(Math.random() * max) 
-  }
-  mixTiles() {
-    const colorIds = this.field.cells
-    .slice()
-    .sort(() => Math.random() - 0.5)
-    .map( item => item.colorId)
-    this.field.clearField()
-    colorIds.map( colorId => {
-      const {xs, ys} = this.field.fillRandomEmptyCell(colorId)
-      const {tile} = this.tile.list[colorId]
-      this.context.drawImage(tile, xs, ys, this.field.cellSize, this.field.cellSize)
-    })
   }
   
   filterColor(id) {
@@ -97,30 +96,9 @@ export default class RootStore {
 	  return result
   }
   
-  click(e) {
-    const eventCoord = {
-      x: e.clientX - this.canvasCoor.x,
-      y: e.clientY - this.canvasCoor.y,
-    }
-    const targetCell = this.field.cells.find(cell => {
-      const { xs, xe, ys, ye } = cell.getCoord()
-      return (
-        (xs <= eventCoord.x) &&  
-        (xe >= eventCoord.x) &&
-        (ys <= eventCoord.y) &&  
-        (ye >= eventCoord.y)
-      )
-    })
-    const { index } = targetCell
-    const deletedTiles = this.bfs(index)
-    const lengthTiles = deletedTiles.length
-    if (lengthTiles >= this.minDestroy && targetCell.colorId !== null) {
-      deletedTiles.map( index => this.field.clearTile(index))
-      this.setPoints(lengthTiles)
-      this.setAttempts()
-    }
-  }  
-  
+  randomNum(max) {
+    return Math.floor(Math.random() * max) 
+  }
   get canvasCoor () {
     return this.canvas.getBoundingClientRect()
   }

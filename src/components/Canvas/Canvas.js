@@ -4,7 +4,6 @@ import styles from './Canvas.module.css'
 
 const Canvas = (props) => {
   const { root } = useContext(Context)
-  //const { style } = root.field
   const canvasRef = useRef(null)
 
   useEffect(() => {
@@ -12,6 +11,7 @@ const Canvas = (props) => {
     const context = canvas.getContext('2d')
     root.start({canvas, context})
   }, [])
+
   return (
     <div 
       className={styles.wrap} 
@@ -25,7 +25,7 @@ const Canvas = (props) => {
         className={styles.field}
         width={root.field.style.width}  
         height={root.field.style.height}
-        onClick={(e) => root.click(e)}
+        onClick={(e) => root.field.click(e)}
       > 
       </canvas>
     </div>
