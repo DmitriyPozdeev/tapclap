@@ -24,11 +24,14 @@ export default class Cell {
   setTile(tile) {
     this.tile = tile
   }
+  setColorId(colorId) {
+    this.colorId = colorId
+  }
   getTile() {
     return this.tile
   }
   deleteTile() {
-    this.tile = null
+    this.colorId = null
   }
   getNeighbors() {
     const positionInRow = this.index % this.store.size.cols

@@ -6,5 +6,4 @@ export default class Tile {
     this.store.randomNum(this.store.tile.list.length)
     this.tile = this.store.tile.list[this.colorId]
   }
-
 }

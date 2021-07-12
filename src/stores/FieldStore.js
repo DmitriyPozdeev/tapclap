@@ -55,7 +55,8 @@ export default class FieldStore {
   fillCells() {
     this.cells.map((cell) => {
       const {tile, colorId} = new Tile(this.root)
-      const {xs, ys} = this.fillRandomEmptyCell(colorId)
+      const {xs, ys} = cell.getCoord()
+      cell.setColorId(colorId)
       this.root.context.drawImage(tile, xs, ys, this.cellSize, this.cellSize)
     })
   }
@@ -89,15 +90,20 @@ export default class FieldStore {
     })
   }
   click(e) {
-    const targetCell = this.defineTargetCell(e)
     this.root.isAnimation = true
+    const targetCell = this.defineTargetCell(e)
     const { index } = targetCell
-    const deletedTiles = this.root.bfs(index)
-    const lengthTiles = deletedTiles.length
-    if (lengthTiles >= this.root.minDestroy && targetCell.colorId !== null) {
-      deletedTiles.map( index => this.clearTile(index))
+    const deletedTiles = this.root.bfs(index)//const clearedCells = this.root.bfs(cell)
+    const lengthTiles = deletedTiles.length // const amountClearedCells = clearedCells.length
+    if (lengthTiles >= this.root.minDestroy && targetCell.colorId !== null) {//if(amountClearedCells > this.root.minDestroy && targetCell.colorId !== null) {}
+      deletedTiles.map( index => this.clearTile(index)) //clearedCells.map( cell => cell.clearTile())
       this.root.setPoints(lengthTiles)
       this.root.setAttempts()
+      deletedTiles.sort((a, b) => b-a).map(index => {
+        const positionInRow = index % this.size.cols
+        console.log(this.cells[this.cells[index].getNeighbors().top]?.isEmpty())
+  
+      })
     }
   }  
   get style() {

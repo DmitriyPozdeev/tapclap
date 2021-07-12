@@ -1,4 +1,4 @@
-import { makeAutoObservable, computed } from 'mobx'
+import { makeAutoObservable, computed, get } from 'mobx'
 import TileStore from './TileStore'
 import FieldStore from './FieldStore'
 
@@ -11,7 +11,7 @@ export default class RootStore {
   mixCount = 3
   attempts = 7 
   isAnimation = false
-  x = 0
+  x = 70
   y =0
   constructor() {
     this.tile = new TileStore(this)
@@ -30,15 +30,33 @@ export default class RootStore {
       this.run()
     })
   } 
+  scanField() {
+    const x = this.field.cells.filter(cell => {
+      return cell.colorId === null
+    }).sort((a,b) => a - b)
+    x.map(cell => cell.colorId = 2)
+    console.log(x)
+    this.isAnimation = false
+    //for (let i = 0; i < this.field.size.rows; i++) {
+    //  for (let j = 0; j < this.field.size.cols; j++) {
+    //    console.log(i , j)
+    //  }
+    //}
+  }
   render() {
-  
-    
-   //   this.context.clearRect(
-   //     this.x, this.y, this.field.cellSize, this.field.cellSize
-   //   )
-   // this.x+=5
-   // this.y+=2
-    
+    if (this.isAnimation) {
+      this.scanField()
+    } 
+  //const x = this.field.cells[0].getCoord().xs
+  //const y = this.field.cells[3].getCoord().ys
+  //this.scanField()
+  //const size = this.field.cellSize
+  //const imageData = this.context.getImageData(this.x, this.y, size, size * 3)
+//
+  //this.context.clearRect(this.x, this.y, size, size * 3)
+//
+  //this.y = this.y < 70 ? this.y += 10: this.y
+  //this.context.putImageData(imageData, this.x, this.y)
   }
 
   start({canvas, context}) {
