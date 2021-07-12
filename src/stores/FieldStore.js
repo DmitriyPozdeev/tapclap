@@ -5,6 +5,7 @@ import Tile from '../entitys/Tile'
 
 export default class FieldStore {
   cells = []
+  cols = []
   cellSize = 70
   size = {
     rows: 5,
@@ -21,6 +22,11 @@ export default class FieldStore {
   getCellCoor(index) {
     return this.cells[index].coor
   }
+  getCol(num) {
+    return this.cells.slice().filter((cell) => {
+      return cell.index % this.size.cols === num 
+    })
+  }
   initCells() {
     for (let i = 0; i < this.size.rows; i++) {
       for (let j = 0; j < this.size.cols; j++) {
@@ -30,6 +36,18 @@ export default class FieldStore {
       }
     }
     console.log(this.cells)
+  }
+  initCols() {
+    for (let i = 0; i < this.size.cols; i++) {
+      this.cols.push(this.getCol(i))
+    }
+  }
+  ofsetRow() {
+    const newCells = []
+    for (let i = 0; i < this.size.cols; i++) {
+      newCells.push(this.getCol(i).filter(cell => !cell.isEmpty()))
+    }
+    console.log(newCells)
   }
   mixTiles() {
     const colorIds = this.cells
@@ -72,6 +90,7 @@ export default class FieldStore {
     this.root.context.clearRect(
       xs, ys, this.cellSize, this.cellSize
     )
+  
   }
   
   defineTargetCell(e) {
@@ -97,6 +116,7 @@ export default class FieldStore {
     const lengthTiles = deletedTiles.length // const amountClearedCells = clearedCells.length
     if (lengthTiles >= this.root.minDestroy && targetCell.colorId !== null) {//if(amountClearedCells > this.root.minDestroy && targetCell.colorId !== null) {}
       deletedTiles.map( index => this.clearTile(index)) //clearedCells.map( cell => cell.clearTile())
+      this.ofsetRow()
       this.root.setPoints(lengthTiles)
       this.root.setAttempts()
       deletedTiles.sort((a, b) => b-a).map(index => {

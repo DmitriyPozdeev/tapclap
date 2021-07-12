@@ -37,11 +37,6 @@ export default class RootStore {
     x.map(cell => cell.colorId = 2)
     console.log(x)
     this.isAnimation = false
-    //for (let i = 0; i < this.field.size.rows; i++) {
-    //  for (let j = 0; j < this.field.size.cols; j++) {
-    //    console.log(i , j)
-    //  }
-    //}
   }
   render() {
     if (this.isAnimation) {
@@ -62,6 +57,7 @@ export default class RootStore {
   start({canvas, context}) {
     this.initGame({canvas, context})
     this.field.initCells()
+    this.field.initCols()
     this.tile.preloadAvailableList()
     .then(() => {
       this.field.fillCells()
@@ -111,6 +107,12 @@ export default class RootStore {
 	  		}
 	  	} 
 	  }
+
+    //const celsArr = this.field.cells.slice().filter((cel) => {
+    //  return result.includes(cel.index) 
+    //})
+    //console.log(celsArr)
+    //console.log(this.field.getCol(2))
 	  return result
   }
   
