@@ -23,16 +23,24 @@ export default class FieldStore {
     return this.cells[index].coor
   }
   initCells() {
-    for (let i = 0; i < this.size.cols; i++) {
-      const currentColl = []
-      for (let j = 0; j < this.size.rows; j++) {
-        currentColl.push(new Cell(this, i, j))
+    for (let i = 0; i < this.size.rows; i++) {
+      for (let j = 0; j < this.size.cols; j++) {
+        this.cells.push(
+          new Cell(this, i, j)
+        ) 
       }
-      this.cells.push(
-        currentColl
-      ) 
     }
     console.log(this.cells)
+  }
+  getCol(num) {
+    return this.cells.slice().filter((cell) => {
+      return cell.index % this.size.cols === num 
+    })
+  }
+  initCols() {
+    for (let i = 0; i < this.size.cols; i++) {
+      this.cols.push(this.getCol(i))
+    }
   }
   mixTiles() {
     
@@ -51,23 +59,18 @@ export default class FieldStore {
     return {
       x: xs,
       y: ys,
-      
+      index: cell.index,
+      colorId: this.root.randomNum(
+        this.root.tile.imgList.length
+      ),
     }
   }
   fillCells() {
-    this.cells
-      .flat()
-      .sort((a,b) => a.index-b.index)
-      .map((cell) => {
-        const {xs, ys} = cell.getCoord()
-        this.root.tile.tiles.push({
-          x: xs,
-          y: ys,
-          colorId: this.root.randomNum(
-            this.root.tile.imgList.length
-          )
-        })
-      })
+    this.cells.forEach((cell) => {
+      this.root.tile.tiles.push(
+        this.createTile(cell)
+      )
+    })
   }
   clearField() {
     this.cells.map(cell => cell.colorId = null)
@@ -104,9 +107,16 @@ export default class FieldStore {
     console.log(targetCell)
     console.log(this.cells.flat().sort((a, b) => a.index - b.index))
     const { index } = targetCell
-    this.root.tile.tiles.splice(index)
+    //this.root.tile.tiles.splice(index, 1, {
+    //  x: targetCell.getCoord().xs,
+    //  y: -50,
+    //  colorId: this.root.randomNum(
+    //    this.root.tile.imgList.length
+    //  )
+    //})
     const tileInCell = this.root.tile.tiles[index]
-    //const deletedTiles = this.root.bfs(index)//const clearedCells = this.root.bfs(cell)
+    const deletedTiles = this.root.bfs(index)//const clearedCells = this.root.bfs(cell)
+    console.log(deletedTiles)
     //const lengthTiles = deletedTiles.length // const amountClearedCells = clearedCells.length
     //if (lengthTiles >= this.root.minDestroy && targetCell.colorId !== null) {//if(amountClearedCells > this.root.minDestroy && targetCell.colorId !== null) {}
     //  deletedTiles.map( index => this.clearTile(index)) //clearedCells.map( cell => cell.clearTile())

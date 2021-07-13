@@ -1,5 +1,5 @@
 export default class Cell {
-  constructor(store, col, row) {
+  constructor(store, row, col) {
     this.store = store
     this.address = {
       row,

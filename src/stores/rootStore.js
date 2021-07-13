@@ -46,6 +46,7 @@ export default class RootStore {
   start({canvas, context}) {
     this.initGame({canvas, context})
     this.field.initCells()
+    this.field.initCols()
     this.tile.preloadImgList()
     .then(() => {
       this.field.fillCells()
@@ -64,21 +65,19 @@ export default class RootStore {
   }
   
   filterColor(id) {
-    return this.field.cells.slice().filter(cell => {
-      return cell.colorId === id
+    return this.tile.tiles.slice().filter(tile => {
+      return tile.colorId === id
     })
   } 
   bfs(index) {
     const adj = {}
-    const validColorCells = this
-      .filterColor(this.field.cells[index].colorId)
-
-    validColorCells.map(cell => {
-      return adj[cell.index] = cell.neighbors
+    const validColorTiles = this
+      .filterColor(this.tile.tiles[index].colorId)
+    validColorTiles.map(tile => {
+      return adj[tile.index] = this.field.cells[tile.index].neighbors
     })
-
     const set = new Set(
-      validColorCells.map(item => item.index)
+      validColorTiles.map(item => item.index)
     )
     const checkColor = (index) => set.has(index)
     let result = []
@@ -87,6 +86,7 @@ export default class RootStore {
     
 	  while(queue.length > 0) {
 	  	let v = queue.shift() 
+      console.log(adj)
 	  	for(let neighbor of adj[v]) {
 	  		if(!visited.has(neighbor) && checkColor(neighbor)) {                     
 	  			visited.add(neighbor)
