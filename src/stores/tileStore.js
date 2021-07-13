@@ -7,7 +7,8 @@ import yellow from '../assets/main/blocks/yellow.png'
 
 export default class TailStore {
   srcs = [red, green, blue, purple, yellow]
-  list = []
+  imgList = []
+  tiles = []
   constructor(rootStore) {
     this.root = rootStore
     makeAutoObservable(this)
@@ -21,13 +22,13 @@ export default class TailStore {
       tile.onerror = () => reject(tile.src)
     })
   }
-  async preloadAvailableList() {
+  async preloadImgList() {
     const promises = this.srcs.reduce((acc, src, colorId) => {
       return [...acc, this.initTile(src)]
     }, [])
     await Promise.all(promises).then((tiles) => {
       for ( let tile of tiles) {
-        this.list.push(tile)
+        this.imgList.push(tile)
       }
     })
   } 

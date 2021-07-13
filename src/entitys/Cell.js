@@ -1,37 +1,21 @@
 export default class Cell {
-  constructor(store, row, col) {
+  constructor(store, col, row) {
     this.store = store
     this.address = {
       row,
       col,
     }
-    this.coor = {
+    this.coord = {
       xs: col * (this.store.cellSize), 
       ys: row * (this.store.cellSize),
       xe: col * (this.store.cellSize) + this.store.cellSize,
       ye: row * (this.store.cellSize) + this.store.cellSize,
     }
-    this.colorId = null
     this.index = this.store.size.cols * row + col
     this.neighbors = this.getNeighborsIndexes()
   }
-  isEmpty() {
-    return this.colorId === null ? true : false
-  }
   getCoord() {
-    return this.coor
-  }
-  setTile(tile) {
-    this.tile = tile
-  }
-  setColorId(colorId) {
-    this.colorId = colorId
-  }
-  getTile() {
-    return this.tile
-  }
-  deleteTile() {
-    this.colorId = null
+    return this.coord
   }
   getNeighbors() {
     const positionInRow = this.index % this.store.size.cols
@@ -59,8 +43,5 @@ export default class Cell {
       }
     }
     return indexes
-  }
-  showData() {
-    console.log(this.colorId)
   }
 } 

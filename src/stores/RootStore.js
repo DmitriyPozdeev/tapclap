@@ -10,9 +10,6 @@ export default class RootStore {
   stepRatio = 50
   mixCount = 3
   attempts = 7 
-  isAnimation = false
-  x = 70
-  y =0
   constructor() {
     this.tile = new TileStore(this)
     this.field = new FieldStore(this)
@@ -24,45 +21,32 @@ export default class RootStore {
     this.canvas = canvas
     this.context = context
   }
+  update() {
+
+  }
   run() {
-    this.render()
-    window.requestAnimationFrame(() => {
+   window.requestAnimationFrame(() => {
+      this.update()
+      this.render()
       this.run()
     })
   } 
-  scanField() {
-    const x = this.field.cells.filter(cell => {
-      return cell.colorId === null
-    }).sort((a,b) => a - b)
-    x.map(cell => cell.colorId = 2)
-    console.log(x)
-    this.isAnimation = false
-    //for (let i = 0; i < this.field.size.rows; i++) {
-    //  for (let j = 0; j < this.field.size.cols; j++) {
-    //    console.log(i , j)
-    //  }
-    //}
-  }
   render() {
-    if (this.isAnimation) {
-      this.scanField()
-    } 
-  //const x = this.field.cells[0].getCoord().xs
-  //const y = this.field.cells[3].getCoord().ys
-  //this.scanField()
-  //const size = this.field.cellSize
-  //const imageData = this.context.getImageData(this.x, this.y, size, size * 3)
-//
-  //this.context.clearRect(this.x, this.y, size, size * 3)
-//
-  //this.y = this.y < 70 ? this.y += 10: this.y
-  //this.context.putImageData(imageData, this.x, this.y)
+    this.context.fillStyle = "#020526";
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.renderTiles()
   }
-
+  renderTiles() {
+    this.tile.tiles.forEach( tile => {
+      this.context.drawImage(
+        this.tile.imgList[tile.colorId], tile.x, tile.y, 70, 70
+      )
+    })
+  }
   start({canvas, context}) {
     this.initGame({canvas, context})
     this.field.initCells()
-    this.tile.preloadAvailableList()
+    this.tile.preloadImgList()
     .then(() => {
       this.field.fillCells()
       this.run()

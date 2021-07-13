@@ -22,44 +22,20 @@ export default class FieldStore {
   getCellCoor(index) {
     return this.cells[index].coor
   }
-  getCol(num) {
-    return this.cells.slice().filter((cell) => {
-      return cell.index % this.size.cols === num 
-    })
-  }
   initCells() {
-    for (let i = 0; i < this.size.rows; i++) {
-      for (let j = 0; j < this.size.cols; j++) {
-        this.cells.push(
-          new Cell(this, i, j)
-        ) 
+    for (let i = 0; i < this.size.cols; i++) {
+      const currentColl = []
+      for (let j = 0; j < this.size.rows; j++) {
+        currentColl.push(new Cell(this, i, j))
       }
+      this.cells.push(
+        currentColl
+      ) 
     }
     console.log(this.cells)
   }
-  initCols() {
-    for (let i = 0; i < this.size.cols; i++) {
-      this.cols.push(this.getCol(i))
-    }
-  }
-  ofsetRow() {
-    const newCells = []
-    for (let i = 0; i < this.size.cols; i++) {
-      newCells.push(this.getCol(i).filter(cell => !cell.isEmpty()))
-    }
-    console.log(newCells)
-  }
   mixTiles() {
-    const colorIds = this.cells
-    .slice()
-    .sort(() => Math.random() - 0.5)
-    .map( item => item.colorId)
-    this.clearField()
-    colorIds.map( colorId => {
-      const {xs, ys} = this.fillRandomEmptyCell(colorId)
-      const {tile} = new Tile(this.root, colorId)
-      this.root.context.drawImage(tile, xs, ys, this.cellSize, this.cellSize)
-    })
+    
   }
   fillRandomEmptyCell(colorId) {//()
     const emptyCells = this.cells.filter( cell => 
@@ -70,13 +46,28 @@ export default class FieldStore {
     const { coor } = emptyCells[indexCell]
     return coor
   }
+  createTile(cell) {
+    const {xs, ys} = cell.getCoord()
+    return {
+      x: xs,
+      y: ys,
+      
+    }
+  }
   fillCells() {
-    this.cells.map((cell) => {
-      const {tile, colorId} = new Tile(this.root)
-      const {xs, ys} = cell.getCoord()
-      cell.setColorId(colorId)
-      this.root.context.drawImage(tile, xs, ys, this.cellSize, this.cellSize)
-    })
+    this.cells
+      .flat()
+      .sort((a,b) => a.index-b.index)
+      .map((cell) => {
+        const {xs, ys} = cell.getCoord()
+        this.root.tile.tiles.push({
+          x: xs,
+          y: ys,
+          colorId: this.root.randomNum(
+            this.root.tile.imgList.length
+          )
+        })
+      })
   }
   clearField() {
     this.cells.map(cell => cell.colorId = null)
@@ -92,13 +83,12 @@ export default class FieldStore {
     )
   
   }
-  
   defineTargetCell(e) {
     const eventCoord = {
       x: e.clientX - this.root.canvasCoor.x,
       y: e.clientY - this.root.canvasCoor.y,
     }
-    return this.cells.find(cell => {
+    return this.cells.flat().find(cell => {
       const { xs, xe, ys, ye } = cell.getCoord()
       return (
         (xs <= eventCoord.x) &&  
@@ -111,20 +101,24 @@ export default class FieldStore {
   click(e) {
     this.root.isAnimation = true
     const targetCell = this.defineTargetCell(e)
+    console.log(targetCell)
+    console.log(this.cells.flat().sort((a, b) => a.index - b.index))
     const { index } = targetCell
-    const deletedTiles = this.root.bfs(index)//const clearedCells = this.root.bfs(cell)
-    const lengthTiles = deletedTiles.length // const amountClearedCells = clearedCells.length
-    if (lengthTiles >= this.root.minDestroy && targetCell.colorId !== null) {//if(amountClearedCells > this.root.minDestroy && targetCell.colorId !== null) {}
-      deletedTiles.map( index => this.clearTile(index)) //clearedCells.map( cell => cell.clearTile())
-      this.ofsetRow()
-      this.root.setPoints(lengthTiles)
-      this.root.setAttempts()
-      deletedTiles.sort((a, b) => b-a).map(index => {
-        const positionInRow = index % this.size.cols
-        console.log(this.cells[this.cells[index].getNeighbors().top]?.isEmpty())
-  
-      })
-    }
+    this.root.tile.tiles.splice(index)
+    const tileInCell = this.root.tile.tiles[index]
+    //const deletedTiles = this.root.bfs(index)//const clearedCells = this.root.bfs(cell)
+    //const lengthTiles = deletedTiles.length // const amountClearedCells = clearedCells.length
+    //if (lengthTiles >= this.root.minDestroy && targetCell.colorId !== null) {//if(amountClearedCells > this.root.minDestroy && targetCell.colorId !== null) {}
+    //  deletedTiles.map( index => this.clearTile(index)) //clearedCells.map( cell => cell.clearTile())
+    //  this.ofsetRow()
+    //  this.root.setPoints(lengthTiles)
+    //  this.root.setAttempts()
+    //  deletedTiles.sort((a, b) => b-a).map(index => {
+    //    const positionInRow = index % this.size.cols
+    //    console.log(this.cells[this.cells[index].getNeighbors().top]?.isEmpty())
+  //
+    //  })
+    //}
   }  
   get style() {
     return {
