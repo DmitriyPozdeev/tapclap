@@ -13,6 +13,12 @@ export default class Cell {
     }
     this.index = this.store.size.cols * row + col
     this.neighbors = this.getNeighborsIndexes()
+    this.tile = {
+      colorId: null,
+      index: this.index,
+      x: this.coord.xs,
+      y: this.coord.ys,
+    }
   }
   getCoord() {
     return this.coord

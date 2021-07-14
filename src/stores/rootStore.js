@@ -46,11 +46,11 @@ export default class RootStore {
   start({canvas, context}) {
     this.initGame({canvas, context})
     this.field.initCells()
-    this.field.initFieldCols()
+    //this.field.initFieldCols()
     this.tile.preloadImgList()
     .then(() => {
       this.field.fillCells()
-      this.field.initTileCols()
+      //this.field.initTileCols()
       this.run()
     })
   }

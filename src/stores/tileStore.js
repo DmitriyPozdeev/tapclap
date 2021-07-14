@@ -14,7 +14,7 @@ export default class TailStore {
     this.root = rootStore
     makeAutoObservable(this)
   }
-
+  
   initTile(src) {
     return new Promise((resolve, reject) => {
       let tile = new Image()
@@ -33,4 +33,7 @@ export default class TailStore {
       }
     })
   } 
+  setCurrentList(list) {
+    this.currentList = list
+  }
 }

@@ -32,36 +32,39 @@ export default class FieldStore {
     }
     console.log(this.cells)
   }
-  getCol(arr, num) {
-    return arr.slice().filter((cell) => {
-      return cell.index % this.size.cols === num 
-    })
-  }
-  initFieldCols() {
-    for (let i = 0; i < this.size.cols; i++) {
-      this.cols.push(this.getCol(this.cells, i))
-    }
-  }
-  initTileCols() {
-    for (let i = 0; i < this.size.cols; i++) {
-      this.root.tile.cols.push(this.getCol(this.root.tile.currentList, i))
-    }
-  }
-  addTile(index) {
-    const {cell} = this.getIndexData(index)
-    const {xs, ys} = cell
-    this.root.tile.currentList[index] = {
-      x: xs,
-      y: ys,
-      colorId: 1,
-      index,
-    }
-  } 
+  //getCol(arr, num) {
+  //  return arr.slice().filter((cell) => {
+  //    return cell.index % this.size.cols === num 
+  //  })
+  //}
+  //initFieldCols() {
+  //  for (let i = 0; i < this.size.cols; i++) {
+  //    this.cols.push(this.getCol(this.cells, i))
+  //  }
+  //}
+  //initTileCols() {
+  //  for (let i = 0; i < this.size.cols; i++) {
+  //    this.root.tile.cols.push(this.getCol(this.root.tile.currentList, i))
+  //  }
+  //}
+  //addTile(index) {
+  //  const {cell} = this.getIndexData(index)
+  //  const {xs, ys} = cell
+  //  this.root.tile.currentList[index] = {
+  //    x: xs,
+  //    y: ys,
+  //    colorId: 1,
+  //    index,
+  //  }
+  //} 
   mixTiles() {
     //this.clearField()
+    console.log(this.cells[6].tile.index)
+    const arrTiles = this.cols.map(cell => cell.tile)
+    console.log(arrTiles)
     const newColArr = this.root.tile.cols.map((col, iCol) => {
-      return col.filter((tile1) => {
-        const {tile} = this.getIndexData(tile1.index)
+      return col.filter((row) => {
+        const {tile} = this.getIndexData(row.index)
         return  tile !== undefined
       })
       //col.forEach((row, iTile) => {
@@ -82,35 +85,24 @@ export default class FieldStore {
     return coor
   }
   createTile(cell) {
-    const {xs, ys} = cell.getCoord()
-    return {
-      x: xs,
-      y: ys,
-      index: cell.index,
-      colorId: this.root.randomNum(
-        this.root.tile.imgList.length
-      ),
-    }
+    cell.tile.colorId = this.root.randomNum(
+      this.root.tile.imgList.length
+    )
+    return cell
   }
   fillCells() {
-    this.cells.forEach((cell) => {
-      this.root.tile.currentList.push(
-        this.createTile(cell)
-      )
+    const newCellList = this.cells.map((cell) => {
+      return this.createTile(cell)
     })
+    const tileList = newCellList.map(cell => cell.tile)
+    this.root.tile.setCurrentList(tileList)
   }
+  
   clearField() {
     this.root.tile.currentList = []
   }
-  clearCell(index, coef) { 
+  clearCell(index) { 
     delete this.root.tile.currentList[index]
-    //.splice(index, 1, {
-    //  x: targetCell.getCoord().xs,
-    //  y: -50,
-    //  colorId: this.root.randomNum(
-    //    this.root.tile.imgList.length
-    //  )
-    //})
   }
   defineTargetCell(e) {
     const eventCoord = {
@@ -135,17 +127,8 @@ export default class FieldStore {
     }
   }
   click(e) {
-    this.root.isAnimation = true
     const targetCell = this.defineTargetCell(e)
     const { index } = targetCell
-    //this.root.tile.tiles.splice(index, 1, {
-    //  x: targetCell.getCoord().xs,
-    //  y: -50,
-    //  colorId: this.root.randomNum(
-    //    this.root.tile.imgList.length
-    //  )
-    //})
-    
     const clearedCells = this.root.bfs(index)//const clearedCells = this.root.bfs(cell)//
     const {tile} = this.getIndexData(index)
     const amountClearedCells = clearedCells.length
