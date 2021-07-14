@@ -8,7 +8,8 @@ import yellow from '../assets/main/blocks/yellow.png'
 export default class TailStore {
   srcs = [red, green, blue, purple, yellow]
   imgList = []
-  tiles = []
+  currentList = []
+  cols = []
   constructor(rootStore) {
     this.root = rootStore
     makeAutoObservable(this)

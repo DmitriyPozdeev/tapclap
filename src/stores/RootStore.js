@@ -37,7 +37,7 @@ export default class RootStore {
     this.renderTiles()
   }
   renderTiles() {
-    this.tile.tiles.forEach( tile => {
+    this.tile.currentList.forEach( tile => {
       this.context.drawImage(
         this.tile.imgList[tile.colorId], tile.x, tile.y, 70, 70
       )
@@ -46,9 +46,11 @@ export default class RootStore {
   start({canvas, context}) {
     this.initGame({canvas, context})
     this.field.initCells()
+    this.field.initFieldCols()
     this.tile.preloadImgList()
     .then(() => {
       this.field.fillCells()
+      this.field.initTileCols()
       this.run()
     })
   }
@@ -64,21 +66,19 @@ export default class RootStore {
   }
   
   filterColor(id) {
-    return this.field.cells.slice().filter(cell => {
-      return cell.colorId === id
+    return this.tile.currentList.slice().filter(tile => {
+      return tile.colorId === id
     })
   } 
   bfs(index) {
     const adj = {}
-    const validColorCells = this
-      .filterColor(this.field.cells[index].colorId)
-
-    validColorCells.map(cell => {
-      return adj[cell.index] = cell.neighbors
+    const validColorTiles = this
+      .filterColor(this.tile.currentList[index]?.colorId)
+    validColorTiles.map(tile => {
+      return adj[tile.index] = this.field.cells[tile.index].neighbors
     })
-
     const set = new Set(
-      validColorCells.map(item => item.index)
+      validColorTiles.map(item => item.index)
     )
     const checkColor = (index) => set.has(index)
     let result = []
@@ -87,13 +87,15 @@ export default class RootStore {
     
 	  while(queue.length > 0) {
 	  	let v = queue.shift() 
-	  	for(let neighbor of adj[v]) {
-	  		if(!visited.has(neighbor) && checkColor(neighbor)) {                     
-	  			visited.add(neighbor)
-          queue.push(neighbor)
-          result.push(neighbor) 
-	  		}
-	  	} 
+      if(Object.keys(adj).length > 0) {
+        for(let neighbor of adj[v]) {
+          if(!visited.has(neighbor) && checkColor(neighbor)) {                     
+            visited.add(neighbor)
+            queue.push(neighbor)
+            result.push(neighbor) 
+          }
+        } 
+      }
 	  }
 	  return result
   }
