@@ -39,18 +39,21 @@ export default class RootStore {
   renderTiles() {
     this.tile.currentList.forEach( tile => {
       this.context.drawImage(
-        this.tile.imgList[tile.colorId], tile.x, tile.y, 70, 70
+        this.tile.imgList[tile.colorId], 
+        tile.x, tile.y, 
+        this.field.cellSize, this.field.cellSize
       )
     })
   }
   start({canvas, context}) {
     this.initGame({canvas, context})
     this.field.initCells()
-    //this.field.initFieldCols()
+    this.field.initFieldCols()
     this.tile.preloadImgList()
     .then(() => {
       this.field.fillCells()
-      //this.field.initTileCols()
+      this.tile.setCurrentList()
+      this.tile.initTileCols()
       this.run()
     })
   }

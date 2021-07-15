@@ -14,7 +14,7 @@ export default class TailStore {
     this.root = rootStore
     makeAutoObservable(this)
   }
-
+  
   initTile(src) {
     return new Promise((resolve, reject) => {
       let tile = new Image()
@@ -33,4 +33,20 @@ export default class TailStore {
       }
     })
   } 
+  setCurrentList() {
+    this.currentList = this.root.field.cells.map(cell => cell.tile)
+  }
+  setColsList(list) {
+    this.cols = list
+  }
+  initTileCols() {
+    const list = []
+    this.root.field.cols.forEach(col => {
+      list.push(col.map(cell => {
+        return cell.tile
+      }))
+    })
+    this.setColsList(list) 
+    console.log(this.cols)
+  }
 }

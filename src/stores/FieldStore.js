@@ -18,10 +18,6 @@ export default class FieldStore {
       cellsAmount: computed,
     })
   }
-  
-  getCellCoor(index) {
-    return this.cells[index].coor
-  }
   initCells() {
     for (let i = 0; i < this.size.rows; i++) {
       for (let j = 0; j < this.size.cols; j++) {
@@ -32,21 +28,27 @@ export default class FieldStore {
     }
     console.log(this.cells)
   }
+  updateCells(tileList) {
+    this.cells.map((cell, i) => {
+      cell.tile = tileList[i]
+      return cell
+    })
+  }
   //getCol(arr, num) {
   //  return arr.slice().filter((cell) => {
   //    return cell.index % this.size.cols === num 
   //  })
   //}
-  //initFieldCols() {
-  //  for (let i = 0; i < this.size.cols; i++) {
-  //    this.cols.push(this.getCol(this.cells, i))
-  //  }
-  //}
-  //initTileCols() {
-  //  for (let i = 0; i < this.size.cols; i++) {
-  //    this.root.tile.cols.push(this.getCol(this.root.tile.currentList, i))
-  //  }
-  //}
+  initFieldCols() {
+    for (let i = 0; i < this.size.cols; i++) {
+      this.cols.push(
+        this.cells.filter(cell => {
+          return cell.address.col === i
+        })
+      )
+    }
+    console.log(this.cols)
+  }
   //addTile(index) {
   //  const {cell} = this.getIndexData(index)
   //  const {xs, ys} = cell
@@ -59,21 +61,38 @@ export default class FieldStore {
   //} 
   mixTiles() {
     //this.clearField()
-    console.log(this.cells[6].tile.index)
-    const arrTiles = this.cols.map(cell => cell.tile)
-    console.log(arrTiles)
-    const newColArr = this.root.tile.cols.map((col, iCol) => {
+    const newColTileArr = this.root.tile.cols.map((col) => {
       return col.filter((row) => {
         const {tile} = this.getIndexData(row.index)
         return  tile !== undefined
       })
-      //col.forEach((row, iTile) => {
-      //  const {tile} = this.getIndexData(row.index)
-//
-      //  console.log(iCol, iTile, tile)//this.root.tile.currentList[row.index])
-      //})
     })
-    console.log(newColArr)
+    newColTileArr.forEach((col, num) => {
+      const diff = this.size.cols - col.length
+      for(let i = 0; i <= diff; i++) {
+        col.unshift({
+          colorId: this.root.randomNum(
+            this.root.tile.imgList.length
+          ),
+          index: -4 * (i + 1) + num,
+          x: num * this.cellSize,
+          y: -(i + 1) * this.cellSize, 
+        })
+      }
+    })
+    const newList = []
+    for (let i = 0; i < this.size.rows; i++) {
+      newColTileArr.forEach((col => {
+        newList.push(col[i])
+      }))
+    }
+    this.cells.forEach(cell => {
+      
+    })  
+      //console.log(tes)
+      //this.updateCells(tes)
+      //this.root.tile.setCurrentList()
+
   }
   fillRandomEmptyCell(colorId) {//()
     const emptyCells = this.cells.filter( cell => 
@@ -91,13 +110,10 @@ export default class FieldStore {
     return cell
   }
   fillCells() {
-    const newCellList = this.cells.map((cell) => {
-      return this.createTile(cell)
+    this.cells.forEach((cell) => {
+      this.createTile(cell)
     })
-    const tileList = newCellList.map(cell => cell.tile)
-    this.root.tile.setCurrentList(tileList)
   }
-  
   clearField() {
     this.root.tile.currentList = []
   }
@@ -129,24 +145,23 @@ export default class FieldStore {
   click(e) {
     const targetCell = this.defineTargetCell(e)
     const { index } = targetCell
-    const clearedCells = this.root.bfs(index)//const clearedCells = this.root.bfs(cell)//
-    const {tile} = this.getIndexData(index)
+    const clearedCells = this.root.bfs(index)
     const amountClearedCells = clearedCells.length
-    if (amountClearedCells >= this.root.minDestroy) {//if(amountClearedCells > this.root.minDestroy && targetCell.colorId !== null) {}
-
+    if (amountClearedCells >= this.root.minDestroy) {
       clearedCells.forEach( (index) => {
         this.clearCell(index)
       })
-    
-    //this.root.setPoints(amountClearedCells)
-    //this.root.setAttempts()
-    //  deletedTiles.sort((a, b) => b-a).map(index => {
-    //    const positionInRow = index % this.size.cols
-    //    console.log(this.cells[this.cells[index].getNeighbors().top]?.isEmpty())
-  //
-    // })
+    this.root.setPoints(amountClearedCells)
+    this.root.setAttempts()
     }
+    //const nw = this.root.tile.cols.map(col => {
+    //  const diff = this.size.cols - col.length
+    //  
+    //})
+    console.log(this.root.tile.cols)
   }  
+
+
   get style() {
     return {
       width: this.size.cols * this.cellSize,

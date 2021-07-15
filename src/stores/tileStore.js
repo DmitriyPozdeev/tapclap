@@ -33,7 +33,20 @@ export default class TailStore {
       }
     })
   } 
-  setCurrentList(list) {
-    this.currentList = list
+  setCurrentList() {
+    this.currentList = this.root.field.cells.map(cell => cell.tile)
+  }
+  setColsList(list) {
+    this.cols = list
+  }
+  initTileCols() {
+    const list = []
+    this.root.field.cols.forEach(col => {
+      list.push(col.map(cell => {
+        return cell.tile
+      }))
+    })
+    this.setColsList(list) 
+    console.log(this.cols)
   }
 }
