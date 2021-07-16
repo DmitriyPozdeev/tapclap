@@ -20,8 +20,17 @@ export default class Cell {
       y: this.coord.ys,
     }
   }
+  setTile(colorId, x, y) {
+    this.tile.colorId = colorId
+    this.tile.x = x
+    this.tile.y = y
+  }
   getCoord() {
     return this.coord
+  }
+  alignTile() {
+    this.tile.y = this.coord.ys
+    this.tile.index = this.index
   }
   getNeighbors() {
     const positionInRow = this.index % this.store.size.cols

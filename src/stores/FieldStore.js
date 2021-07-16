@@ -1,12 +1,10 @@
 import { makeAutoObservable, computed } from 'mobx'
 import Cell from '../entitys/Cell'
-import Tile from '../entitys/Tile'
-
 
 export default class FieldStore {
   cells = []
   cols = []
-  cellSize = 70
+  cellSize = 60
   size = {
     rows: 5,
     cols: 4,
@@ -31,8 +29,10 @@ export default class FieldStore {
   updateCells(tileList) {
     this.cells.map((cell, i) => {
       cell.tile = tileList[i]
+      tileList[i].index = cell.index
       return cell
     })
+    console.log(tileList )
   }
   //getCol(arr, num) {
   //  return arr.slice().filter((cell) => {
@@ -67,17 +67,19 @@ export default class FieldStore {
         return  tile !== undefined
       })
     })
-    newColTileArr.forEach((col, num) => {
+    newColTileArr.forEach((col, colNum) => {
       const diff = this.size.cols - col.length
       for(let i = 0; i <= diff; i++) {
-        col.unshift({
+        const tile = {
           colorId: this.root.randomNum(
             this.root.tile.imgList.length
           ),
-          index: -4 * (i + 1) + num,
-          x: num * this.cellSize,
+          index: colNum + (i * this.size.cols),
+          x: colNum * this.cellSize,
           y: -(i + 1) * this.cellSize, 
-        })
+        }
+        console.log(colNum, i, this.size.cols)
+        col.unshift(tile)
       }
     })
     const newList = []
@@ -86,14 +88,14 @@ export default class FieldStore {
         newList.push(col[i])
       }))
     }
+    console.log(newList)
+    this.root.tile.currentList = newList
+    this.updateCells(newList)
     this.cells.forEach(cell => {
-      
+      cell.alignTile()
     })  
-      //console.log(tes)
-      //this.updateCells(tes)
-      //this.root.tile.setCurrentList()
-
   }
+
   fillRandomEmptyCell(colorId) {//()
     const emptyCells = this.cells.filter( cell => 
       cell.colorId === null //cell.isEmpty
@@ -144,6 +146,7 @@ export default class FieldStore {
   }
   click(e) {
     const targetCell = this.defineTargetCell(e)
+    console.log(targetCell)
     const { index } = targetCell
     const clearedCells = this.root.bfs(index)
     const amountClearedCells = clearedCells.length

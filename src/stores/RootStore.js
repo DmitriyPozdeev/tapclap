@@ -1,4 +1,4 @@
-import { makeAutoObservable, computed, get } from 'mobx'
+import { makeAutoObservable, computed, autorun } from 'mobx'
 import TileStore from './TileStore'
 import FieldStore from './FieldStore'
 
@@ -17,23 +17,21 @@ export default class RootStore {
       canvasCoordinates: computed,
     }) 
   }
+ 
   initGame({canvas, context}) {
     this.canvas = canvas
     this.context = context
   }
-  update() {
-
-  }
   run() {
    window.requestAnimationFrame(() => {
-      this.update()
       this.render()
       this.run()
     })
   } 
   render() {
     this.context.fillStyle = "#020526";
-    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
+    this.context.fillStyle = "white"
     this.renderTiles()
   }
   renderTiles() {
@@ -42,6 +40,11 @@ export default class RootStore {
         this.tile.imgList[tile.colorId], 
         tile.x, tile.y, 
         this.field.cellSize, this.field.cellSize
+      )
+      this.context.fillText(
+        tile.index, 
+        tile.x+10, tile.y+25
+      
       )
     })
   }
@@ -52,7 +55,7 @@ export default class RootStore {
     this.tile.preloadImgList()
     .then(() => {
       this.field.fillCells()
-      this.tile.setCurrentList()
+      this.tile.initCurrentList()
       this.tile.initTileCols()
       this.run()
     })

@@ -33,7 +33,7 @@ export default class TailStore {
       }
     })
   } 
-  setCurrentList() {
+  initCurrentList() {
     this.currentList = this.root.field.cells.map(cell => cell.tile)
   }
   setColsList(list) {
