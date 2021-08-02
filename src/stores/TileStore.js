@@ -9,12 +9,12 @@ export default class TailStore {
   srcs = [red, green, blue, purple, yellow]
   imgList = []
   currentList = []
-  cols = []
+  currentDelete = []
+
   constructor(rootStore) {
     this.root = rootStore
     makeAutoObservable(this)
   }
-  
   initTile(src) {
     return new Promise((resolve, reject) => {
       let tile = new Image()
@@ -24,7 +24,7 @@ export default class TailStore {
     })
   }
   async preloadImgList() {
-    const promises = this.srcs.reduce((acc, src, colorId) => {
+    const promises = this.srcs.reduce((acc, src) => {
       return [...acc, this.initTile(src)]
     }, [])
     await Promise.all(promises).then((tiles) => {
@@ -34,19 +34,26 @@ export default class TailStore {
     })
   } 
   initCurrentList() {
-    this.currentList = this.root.field.cells.map(cell => cell.tile)
+    for (let i = 0; i < this.root.field.size.rows; i++) {
+      const row = []
+      for (let j = 0; j < this.root.field.size.cols; j++) {
+        row.push({
+          index: i * this.root.field.size.cols + j,
+          colorId: this.root.randomNum(this.srcs.length),
+          xs: j * this.root.field.cellSize,
+          ys: i * this.root.field.cellSize,
+        })
+      } 
+      this.currentList.push(row)
+    }
   }
-  setColsList(list) {
-    this.cols = list
+  depthMapCurrentList(callback) {
+    
   }
-  initTileCols() {
-    const list = []
-    this.root.field.cols.forEach(col => {
-      list.push(col.map(cell => {
-        return cell.tile
-      }))
-    })
-    this.setColsList(list) 
-    console.log(this.cols)
+  setCurrentDelete(indexesArray) {
+    this.currentDelete = indexesArray
   }
 }
+
+
+ 

@@ -1,4 +1,4 @@
-import { makeAutoObservable, computed, autorun } from 'mobx'
+import { makeAutoObservable, computed } from 'mobx'
 import TileStore from './TileStore'
 import FieldStore from './FieldStore'
 
@@ -6,15 +6,17 @@ export default class RootStore {
   canvas = null
   context = null
   minDestroy = 2
-  points = 0
+  points = 1234567890
   stepRatio = 50
   mixCount = 3
   attempts = 7 
+  
   constructor() {
     this.tile = new TileStore(this)
     this.field = new FieldStore(this)
     makeAutoObservable(this, {
       canvasCoordinates: computed,
+      offsetSpeed: computed,
     }) 
   }
  
@@ -22,41 +24,88 @@ export default class RootStore {
     this.canvas = canvas
     this.context = context
   }
+  update() {
+    if(this.field.isAnimate) {
+      this.tile.currentList.forEach((row, i) => {
+        row.forEach((tile, j) => {
+          const currentIndex = i * this.field.size.cols + j
+          const {xs} = this.field.cells[currentIndex].getCoord()
+          if(tile.index !== currentIndex) {
+            tile.xs -= this.offsetSpeed
+            if(tile.xs === xs){
+              tile.index = currentIndex
+              this.field.cells[currentIndex].reset()
+              this.tile.setCurrentDelete([])
+              console.log(currentIndex) 
+            }
+          }
+        })
+        
+        let diff = this.field.size.cols - row.length
+        let count = 0
+        for(let j = diff; row.length < this.field.size.cols; j++) {
+          row.push({
+            index: i * this.field.size.cols,
+            colorId: this.randomNum(this.tile.srcs.length),
+            xs: this.field.size.cols * this.field.cellSize + 
+                diff  * this.field.cellSize + 
+                count * this.field.cellSize * 2,
+            ys: i * this.field.cellSize,
+          })
+          count+=1
+        }
+        count = 0
+        //const control = this.tile.currentList.flat().filter((tile, i) => {
+        //  return tile.xs === this.field.cells[i].xs
+        //})
+        //console.log(control)
+        //if(control.length !== 0) this.field.isAnimate = false
+      }) 
+    }
+  }
   run() {
    window.requestAnimationFrame(() => {
+      this.update()  
       this.render()
       this.run()
     })
   } 
   render() {
     this.context.fillStyle = "#020526";
-    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
-    this.context.fillStyle = "white"
+    this.context.fillRect(
+      0, 0, this.canvas.width, this.canvas.height
+    )
+    this.renderDelete()
     this.renderTiles()
   }
+  renderDelete() {
+    if(this.field.isAnimate) {
+      this.field.cells.forEach(cell => {
+        const { index } = cell
+        if (cell.image && this.tile.currentDelete.includes(index)) {
+          cell.animateImage()
+        }
+      })
+    }
+  }
   renderTiles() {
-    this.tile.currentList.forEach( tile => {
-      this.context.drawImage(
-        this.tile.imgList[tile.colorId], 
-        tile.x, tile.y, 
-        this.field.cellSize, this.field.cellSize
-      )
-      this.context.fillText(
-        tile.index, 
-        tile.x+10, tile.y+25
-      
-      )
+    this.tile.currentList.forEach((row) => {
+      row.forEach((tile) => {
+        this.context.drawImage(
+          this.tile.imgList[tile.colorId], 
+          tile.xs, tile.ys, 
+          this.field.cellSize, this.field.cellSize
+        )
+      })
     })
   }
+  
   start({canvas, context}) {
     this.initGame({canvas, context})
     this.field.initCells()
-    this.field.initFieldCols()
     this.tile.preloadImgList()
     .then(() => {
-      this.field.fillCells()
       this.tile.initCurrentList()
-      this.tile.initTileCols()
       this.run()
     })
   }
@@ -67,49 +116,36 @@ export default class RootStore {
       this.stepRatio * 
       (amount - this.minDestroy)
   }
-  setAttempts() {
-    this.attempts -= 1
-  }
-  
-  filterColor(id) {
-    return this.tile.currentList.slice().filter(tile => {
-      return tile.colorId === id
-    })
-  } 
+
   bfs(index) {
-    const adj = {}
-    const validColorTiles = this
-      .filterColor(this.tile.currentList[index]?.colorId)
-    validColorTiles.map(tile => {
-      return adj[tile.index] = this.field.cells[tile.index].neighbors
-    })
-    const set = new Set(
-      validColorTiles.map(item => item.index)
-    )
-    const checkColor = (index) => set.has(index)
+    let color = this.tile.currentList.flat()[index]?.colorId
     let result = []
 	  let queue = [index]
     let visited = new Set([])
-    
+
 	  while(queue.length > 0) {
-	  	let v = queue.shift() 
-      if(Object.keys(adj).length > 0) {
-        for(let neighbor of adj[v]) {
-          if(!visited.has(neighbor) && checkColor(neighbor)) {                     
-            visited.add(neighbor)
-            queue.push(neighbor)
-            result.push(neighbor) 
-          }
-        } 
-      }
-	  }
-	  return result
+     let v = queue.shift() 
+     this.field.cells[v].neighbors.forEach(neighbor => {
+       if(
+         !visited.has(neighbor) && 
+         this.tile.currentList.flat()[neighbor]?.colorId === color
+       ) {                  
+         visited.add(neighbor)
+         queue.push(neighbor)
+         result.push(neighbor) 
+       }
+     })
+    }
+	  return result.length >= this.minDestroy ? result : [] 
   }
   
   randomNum(max) {
     return Math.floor(Math.random() * max) 
   }
-  get canvasCoor () {
+  get canvasCoor() {
     return this.canvas.getBoundingClientRect()
   }
+  get offsetSpeed() {
+    return this.field.cellSize / 6
+  } 
 }

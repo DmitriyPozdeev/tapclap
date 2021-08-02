@@ -11,7 +11,6 @@ const Points = observer(() => {
       className={styles.wrap} 
     >
       {root.points}
-      
     </span>
   )
 })

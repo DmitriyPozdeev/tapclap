@@ -2,7 +2,7 @@ import { useRef, useEffect, useContext } from 'react'
 import { Context } from '../../index'
 import styles from './Canvas.module.css'
 
-const Canvas = (props) => {
+const Canvas = () => {
   const { root } = useContext(Context)
   const canvasRef = useRef(null)
 
@@ -16,8 +16,8 @@ const Canvas = (props) => {
     <div 
       className={styles.wrap} 
       style={{
-        width: root.field.style.width + 8,
-        height: root.field.style.height + 8,
+        width: root.field.style.width + 14,
+        height: root.field.style.height + 14,
       }}
     >
       <canvas

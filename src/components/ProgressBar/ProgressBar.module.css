@@ -1,0 +1,30 @@
+.wrap {
+ display: flex;
+ justify-content: center;
+}
+.progress {
+  position: relative;
+  top: -50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  width: 400px;
+  height: 127px;
+  border-radius: 15px;
+  background-image: linear-gradient(0deg, #0f3c79 0%, #09203f 100%);
+  color: #fff
+}
+.allProgress {
+  width: 90%;
+  height: 26px;
+  margin: 5px 0 15px 0;
+  border-radius: 13px;
+  background: #011633;
+}
+.completeProgress {
+  width: 125px;
+  height: 24px;
+  border-radius: 12px;
+  background-image: linear-gradient(0deg, #60ff00 1%, #1d9b00 32%, #a2ff00 77%, #ecffcc 100%);
+}
