@@ -1,7 +1,4 @@
 .wrap {
-  position: relative;
-  top: 10px;
-  left: 40px;
   display: flex;
   justify-content: center;
   filter: drop-shadow(0 0 8.5px rgba(0,0,0,0.43));

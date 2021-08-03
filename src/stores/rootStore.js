@@ -6,11 +6,12 @@ export default class RootStore {
   canvas = null
   context = null
   minDestroy = 2
-  points = 1234567890
+  points = 0
+  minWinPoints = 5000
   stepRatio = 50
-  mixCount = 3
-  attempts = 7 
-  
+  mixCount = 2
+  moves = 18
+
   constructor() {
     this.tile = new TileStore(this)
     this.field = new FieldStore(this)
@@ -24,47 +25,46 @@ export default class RootStore {
     this.canvas = canvas
     this.context = context
   }
-  update() {
-    if(this.field.isAnimate) {
-      this.tile.currentList.forEach((row, i) => {
-        row.forEach((tile, j) => {
-          const currentIndex = i * this.field.size.cols + j
-          const {xs} = this.field.cells[currentIndex].getCoord()
-          if(tile.index !== currentIndex) {
-            tile.xs -= this.offsetSpeed
-            if(tile.xs === xs){
-              tile.index = currentIndex
-              this.field.cells[currentIndex].reset()
-              this.tile.setCurrentDelete([])
-              console.log(currentIndex) 
-            }
-          }
-        })
-        
-        let diff = this.field.size.cols - row.length
-        let count = 0
-        for(let j = diff; row.length < this.field.size.cols; j++) {
-          row.push({
-            index: i * this.field.size.cols,
-            colorId: this.randomNum(this.tile.srcs.length),
-            xs: this.field.size.cols * this.field.cellSize + 
-                diff  * this.field.cellSize + 
-                count * this.field.cellSize * 2,
-            ys: i * this.field.cellSize,
-          })
-          count+=1
-        }
-        count = 0
-        //const control = this.tile.currentList.flat().filter((tile, i) => {
-        //  return tile.xs === this.field.cells[i].xs
-        //})
-        //console.log(control)
-        //if(control.length !== 0) this.field.isAnimate = false
-      }) 
+
+  addTiles(row, numRow) {
+    const cols = this.field.size.cols
+    const cellSize = this.field.cellSize
+    let diff = cols - row.length
+    let count = 0
+    for(let j = diff; row.length < cols; j++) {
+      row.push({
+        index: numRow * cols,
+        colorId: this.randomNum(this.tile.srcs.length),
+        xs: cols * cellSize + 
+            diff  * cellSize + 
+            count * cellSize * 2,
+        ys: numRow * cellSize,
+      })
+      count+=1
     }
+    count = 0
+  }
+  update() {
+    const cols = this.field.size.cols
+    this.tile.currentList.forEach((row, i) => {
+      row.forEach((tile, j) => {
+        const currentIndex = i * cols + j
+        const {xs, ys} = this.field.cells[currentIndex].getCoord()
+        if(tile.index !== currentIndex) {
+          tile.xs -= this.offsetSpeed
+          tile.ys = ys
+          if(tile.xs === xs){
+            tile.index = currentIndex
+            this.field.cells[currentIndex].reset()
+          }
+        }
+      })
+      this.addTiles(row, i)
+    })
   }
   run() {
    window.requestAnimationFrame(() => {
+     // console.log(this.isAnimate)
       this.update()  
       this.render()
       this.run()
@@ -79,14 +79,12 @@ export default class RootStore {
     this.renderTiles()
   }
   renderDelete() {
-    if(this.field.isAnimate) {
-      this.field.cells.forEach(cell => {
-        const { index } = cell
-        if (cell.image && this.tile.currentDelete.includes(index)) {
-          cell.animateImage()
-        }
-      })
-    }
+    this.field.cells.forEach(cell => {
+      const { index } = cell
+      if (cell.image && this.tile.currentDelete.includes(index)) {
+        cell.animateImage()
+      }
+    })
   }
   renderTiles() {
     this.tile.currentList.forEach((row) => {
@@ -115,6 +113,12 @@ export default class RootStore {
       (amount * this.stepRatio) + 
       this.stepRatio * 
       (amount - this.minDestroy)
+  }
+  setMoves() {
+    this.moves = this.moves > 0 ?  this.moves-= 1 : 0
+  }
+  checkWin() {
+
   }
 
   bfs(index) {

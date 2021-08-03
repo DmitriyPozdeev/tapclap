@@ -34,12 +34,35 @@ export default class TailStore {
     })
   } 
   initCurrentList() {
+    const rows = this.root.field.size.rows
+    const cols = this.root.field.size.cols
+    const cellSize = this.root.field.cellSize
+    const amountSrcs = this.srcs.length
+    this.currentList = [...Array(rows)].map((_, i) => { 
+      return [...Array(cols)].map((_, j) => {
+        return {
+          index: i * cols + j,
+          colorId: this.root.randomNum(amountSrcs),
+          xs: j * cellSize,
+          ys: i * cellSize,
+        }
+      })
+    })
+  }
+  mixCurrentList() {
+    const cols = this.root.field.size.cols
+    const colorList = this.root.tile.currentList
+    .flat()
+    .map(tile => tile.colorId)
+    .sort(() => Math.random() - 0.5)
+    
+    this.root.tile.currentList = []
     for (let i = 0; i < this.root.field.size.rows; i++) {
       const row = []
-      for (let j = 0; j < this.root.field.size.cols; j++) {
+      for (let j = 0; j < cols; j++) {
         row.push({
-          index: i * this.root.field.size.cols + j,
-          colorId: this.root.randomNum(this.srcs.length),
+          index: i * cols + j,
+          colorId: colorList[i * cols + j],
           xs: j * this.root.field.cellSize,
           ys: i * this.root.field.cellSize,
         })
@@ -47,9 +70,31 @@ export default class TailStore {
       this.currentList.push(row)
     }
   }
-  depthMapCurrentList(callback) {
+  chessCurrentList() {
+    const cols = this.root.field.size.cols
     
+
+    this.root.tile.currentList = []
+    for (let i = 0; i < this.root.field.size.rows; i++) {
+      const row = []
+      for (let j = 0; j < cols; j++) {
+        let color
+        if(i % 2) {
+          if(j % 2) {
+            color = 1
+          } else color = 2
+        } else color = 2
+        row.push({
+          index: i * cols + j,
+          colorId: color ,
+          xs: j * this.root.field.cellSize,
+          ys: i * this.root.field.cellSize,
+        })
+      } 
+      this.currentList.push(row)
+    }
   }
+  
   setCurrentDelete(indexesArray) {
     this.currentDelete = indexesArray
   }

@@ -1,9 +1,9 @@
 import { useContext } from 'react'
 import { Context } from '../../index'
 import { observer } from 'mobx-react-lite'
-import styles from './Points.module.css'
+import styles from './Mixes.module.css'
 
-const Points = observer(() => {
+const Mixes = observer(() => {
   const { root } = useContext(Context)
 
   return (
@@ -11,11 +11,11 @@ const Points = observer(() => {
       className={styles.wrap} 
     >
       <span className={styles.label}>
-        ОЧКИ
+        Перемешиваний
       </span>
-      {root.points}
+      {root.mixCount}
     </div>
   )
 })
 
-export default Points
+export default Mixes

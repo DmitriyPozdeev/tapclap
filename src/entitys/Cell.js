@@ -19,9 +19,7 @@ export default class Cell {
     this.neighbors = this.getNeighbors()
   }
   sephia(imageData) {
-    // получаем одномерный массив, описывающий все пиксели изображения
     const pixels = imageData.data;
-    // циклически преобразуем массив, изменяя значения красного, зеленого и синего каналов
     for (let i = 0; i < pixels.length; i += 16) {
       const r = pixels[i];
       const g = pixels[i + 1];
@@ -31,6 +29,12 @@ export default class Cell {
       pixels[i + 2] = r+g+b; // blue
     }
     return imageData;
+  }
+  inPlace() {
+    if(this.store.root.tile.currentList.flat().length === this.store.cells.length) {
+      return this.store.root.tile.currentList.flat()[this.index].xs !== this.coord.xs
+    }
+    return false
   }
   captureImage() {
     this.image = this.store.root.context.getImageData(

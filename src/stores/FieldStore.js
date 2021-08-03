@@ -9,7 +9,6 @@ export default class FieldStore {
     rows: 10,
     cols: 9,
   }
-  isAnimate = false
   constructor(rootStore) {
     this.root = rootStore
     makeAutoObservable(this, {
@@ -44,12 +43,11 @@ export default class FieldStore {
     })
   }
   click(e) {
-    //if (this.isAnimate) return
     const targetCell = this.defineTargetCell(e)
     const { index } = targetCell
     const delIndexes = this.root.bfs(index)
     if(delIndexes) {
-      this.isAnimate = true
+      this.root.isAnimate = true
       this.root.tile.setCurrentDelete(delIndexes)
       for (let i = 0; i < this.size.rows; i++) {
         for (let j = 0; j < this.size.cols; j++) {
@@ -61,6 +59,8 @@ export default class FieldStore {
         }
       }
       setTimeout(() => {
+        this.root.setPoints(delIndexes.length)
+        this.root.setMoves()
         this.root.tile.currentList = this.root.tile.currentList
         .map((row) => {
           return row.filter(tile => tile)
@@ -68,6 +68,25 @@ export default class FieldStore {
       }, 300)
     }
   }  
+  mix() {
+    this.root.tile.mixCurrentList()
+    this.root.mixCount -= 1
+    //const newTileList = this.root.tile.currentList.slice()
+    //const tempCellList = this.cells.slice()
+    //newTileList.forEach((row, i) => {
+    //  row.forEach((tile, j) => {
+    //    tile.xs = this.size.cols * this.cellSize
+    //    tile.index = 90
+    //    tile.ys = this.cells[i * this.root.field.size.cols + j].getCoord().ys
+    //    tempCellList.filter(cell => cell.index !== tile.index)
+    //  })
+    //})
+    //this.root.tile.currentList = newTileList
+  }
+  chess() {
+    this.root.tile.chessCurrentList()
+  }
+
   get style() {
     return {
       width: this.size.cols * this.cellSize,
