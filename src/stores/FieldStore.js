@@ -9,6 +9,7 @@ export default class FieldStore {
     rows: 10,
     cols: 9,
   }
+  isAnimate = false
   constructor(rootStore) {
     this.root = rootStore
     makeAutoObservable(this, {
@@ -24,7 +25,6 @@ export default class FieldStore {
         ) 
       }
     }
-    console.log(this.cells)
   }
 
   defineTargetCell(e) {
@@ -43,50 +43,57 @@ export default class FieldStore {
     })
   }
   click(e) {
+    const cols = this.size.cols
+    const rows = this.size.rows
     const targetCell = this.defineTargetCell(e)
     const { index } = targetCell
     const delIndexes = this.root.bfs(index)
-    if(delIndexes) {
-      this.root.isAnimate = true
+    const amountDelIndexes = delIndexes.length
+    if(amountDelIndexes > 0 && !this.isAnimate) {
+      this.isAnimate = true
       this.root.tile.setCurrentDelete(delIndexes)
-      for (let i = 0; i < this.size.rows; i++) {
-        for (let j = 0; j < this.size.cols; j++) {
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
           if (this.root.tile.currentDelete
-               .includes(i * this.size.cols + j)) {
-            this.cells[i * this.size.cols + j].captureImage()
+               .includes(i * cols + j)) {
+            this.cells[i * cols + j].captureImage()
             delete this.root.tile.currentList[i][j]
           }
         }
       }
-      setTimeout(() => {
-        this.root.setPoints(delIndexes.length)
-        this.root.setMoves()
-        this.root.tile.currentList = this.root.tile.currentList
+      const newTileList = this.root.tile.currentList
         .map((row) => {
           return row.filter(tile => tile)
         })
-      }, 300)
+
+      setTimeout(() => {
+        this.root.setPoints(amountDelIndexes)
+        this.root.setProgress()
+        this.root.setMoves()
+        this.root.tile.setCurrentList(newTileList)
+        this.root.checkWin()
+      }, 250)
     }
   }  
   mix() {
     this.root.tile.mixCurrentList()
-    this.root.mixCount -= 1
-    //const newTileList = this.root.tile.currentList.slice()
-    //const tempCellList = this.cells.slice()
-    //newTileList.forEach((row, i) => {
-    //  row.forEach((tile, j) => {
-    //    tile.xs = this.size.cols * this.cellSize
-    //    tile.index = 90
-    //    tile.ys = this.cells[i * this.root.field.size.cols + j].getCoord().ys
-    //    tempCellList.filter(cell => cell.index !== tile.index)
-    //  })
-    //})
-    //this.root.tile.currentList = newTileList
+    this.root.setMixCount()
+    if(!this.checkMoves() && (this.root.mixCount === 0)) {
+      this.root.setIsOver(true)
+    }
   }
-  chess() {
-    this.root.tile.chessCurrentList()
+  checkMoves() {
+    const flatTileList = this.root.tile.currentList.flat()
+    for (const tile of flatTileList) {
+      if(this.root.bfs(tile.index).length >= this.root.minDestroy) {
+        return true
+      }
+    }
+    return false
   }
+  checkOver() {
 
+  }
   get style() {
     return {
       width: this.size.cols * this.cellSize,

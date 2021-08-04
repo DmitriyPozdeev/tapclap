@@ -49,6 +49,9 @@ export default class TailStore {
       })
     })
   }
+  setCurrentList(list) {
+    this.currentList = list
+  }
   mixCurrentList() {
     const cols = this.root.field.size.cols
     const colorList = this.root.tile.currentList

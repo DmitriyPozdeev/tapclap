@@ -5,6 +5,7 @@ import Moves from './components/Moves/Moves'
 import ProgressBar from './components/ProgressBar/ProgressBar'
 import Mixes from './components/Mixes/Mixes';
 import Mix from './components/Mix/Mix';
+import Modal from './components/Modal/Modal';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Moves/>
         <Mixes/>
         <Mix/>
+        <Modal/>
       </div>
       
     </>

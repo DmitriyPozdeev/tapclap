@@ -1,11 +1,10 @@
-import { useEffect, useContext } from 'react'
+import { useContext } from 'react'
 import { Context } from '../../index'
+import { observer } from 'mobx-react-lite'
 import styles from './ProgressBar.module.css'
 
-const ProgressBar = () => {
+const ProgressBar = observer(() => {
   const { root } = useContext(Context)
-  useEffect(() => {
-  }, [])
 
   return (
     <div 
@@ -16,11 +15,16 @@ const ProgressBar = () => {
           ПРОГРЕСС
         </span>
         <div className={styles.allProgress}>
-          <div className={styles.completeProgress}></div>
+          <div 
+            className={styles.completeProgress}
+            style={{
+              width: root.progress < 100 ? `${root.progress}%` : '100%'
+            }}
+          ></div>
         </div>
       </div>
     </div>
   )
-}
+})
 
 export default ProgressBar
