@@ -15,6 +15,7 @@ export default class TailStore {
     this.root = rootStore
     makeAutoObservable(this)
   }
+
   initTile(src) {
     return new Promise((resolve, reject) => {
       let tile = new Image()
@@ -23,6 +24,7 @@ export default class TailStore {
       tile.onerror = () => reject(tile.src)
     })
   }
+
   async preloadImgList() {
     const promises = this.srcs.reduce((acc, src) => {
       return [...acc, this.initTile(src)]
@@ -33,12 +35,14 @@ export default class TailStore {
       }
     })
   } 
-  initCurrentList() {
+
+  createTileList() {
     const rows = this.root.field.size.rows
     const cols = this.root.field.size.cols
     const cellSize = this.root.field.cellSize
     const amountSrcs = this.srcs.length
-    this.currentList = [...Array(rows)].map((_, i) => { 
+
+    const list = [...Array(rows)].map((_, i) => { 
       return [...Array(cols)].map((_, j) => {
         return {
           index: i * cols + j,
@@ -48,56 +52,60 @@ export default class TailStore {
         }
       })
     })
+    this.setCurrentList(list)
+    return list
   }
+ 
+  checkList(list) {
+    const flatTileList = list.flat()
+    for (const tile of flatTileList) {
+      if(this.root.bfs(tile.index).length >= this.root.minDestroy) {
+        return true
+      }
+    }
+    return false
+  }
+  repairList(list) {
+    let counter = 0 
+    while(!this.checkList(list) && counter < 5) {
+      this.mixCurrentList()
+      counter++
+    }
+    if(counter === 5) {
+      alert('Игра не возможна, слишком высокое значение minDestroy')
+      this.setCurrentList([])
+    }
+  }
+
+  initCurrentList() {
+    const list = this.createTileList()
+    if(!this.checkList(list)) {
+      this.repairList(list)
+    }
+  }
+
   setCurrentList(list) {
     this.currentList = list
   }
+
+  getMixedColorList() {
+    return this.currentList
+    .flat()
+    .sort(() => Math.random() - 0.5)
+    .map(tile => tile.colorId)
+  }
+
   mixCurrentList() {
     const cols = this.root.field.size.cols
-    const colorList = this.root.tile.currentList
-    .flat()
-    .map(tile => tile.colorId)
-    .sort(() => Math.random() - 0.5)
-    
-    this.root.tile.currentList = []
-    for (let i = 0; i < this.root.field.size.rows; i++) {
-      const row = []
-      for (let j = 0; j < cols; j++) {
-        row.push({
-          index: i * cols + j,
-          colorId: colorList[i * cols + j],
-          xs: j * this.root.field.cellSize,
-          ys: i * this.root.field.cellSize,
-        })
-      } 
-      this.currentList.push(row)
-    }
+    const colorList = this.getMixedColorList()
+    this.currentList.map((row, i) => {
+      return row.map((tile, j) => {
+        tile.colorId = colorList[i * cols + j]
+        return tile
+      })
+    })
   }
-  chessCurrentList() {
-    const cols = this.root.field.size.cols
-    
 
-    this.root.tile.currentList = []
-    for (let i = 0; i < this.root.field.size.rows; i++) {
-      const row = []
-      for (let j = 0; j < cols; j++) {
-        let color
-        if(i % 2) {
-          if(j % 2) {
-            color = 1
-          } else color = 2
-        } else color = 2
-        row.push({
-          index: i * cols + j,
-          colorId: color ,
-          xs: j * this.root.field.cellSize,
-          ys: i * this.root.field.cellSize,
-        })
-      } 
-      this.currentList.push(row)
-    }
-  }
-  
   setCurrentDelete(indexesArray) {
     this.currentDelete = indexesArray
   }

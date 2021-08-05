@@ -71,6 +71,8 @@ export default class FieldStore {
         this.root.setProgress()
         this.root.setMoves()
         this.root.tile.setCurrentList(newTileList)
+        
+        this.checkMoves()
         this.root.checkWin()
       }, 250)
     }
@@ -91,9 +93,7 @@ export default class FieldStore {
     }
     return false
   }
-  checkOver() {
-
-  }
+  
   get style() {
     return {
       width: this.size.cols * this.cellSize,

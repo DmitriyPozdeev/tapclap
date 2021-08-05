@@ -12,8 +12,8 @@ export default class RootStore {
   stepRatio = 50
   mixCount = 2
   moves = 18
-  isOver = true
-  userState = 'process'
+  isOver = false
+  userStatus = 'start'
   startCounter = new Set([])
   stopCounter = new Set([])
   constructor() {
@@ -30,7 +30,6 @@ export default class RootStore {
     this.mixCount = 2
     this.moves = 18
     this.isOver = false
-    this.userState = 'process'
     this.tile.initCurrentList()
 
   }
@@ -41,7 +40,7 @@ export default class RootStore {
     this.isOver = bool
   }
   setUserState(state) {
-    this.userState = state
+    this.userStatus = state
   }
   setProgress() {
     this.progress = (this.points / this.minWinPoints) * 100
@@ -96,7 +95,7 @@ export default class RootStore {
     }
   }
   run() {
-   window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
       this.update()  
       this.render()
       this.run()
@@ -147,7 +146,7 @@ export default class RootStore {
       (amount - this.minDestroy)
   }
   setMoves() {
-    this.moves = this.moves > 0 ?  this.moves-= 1 : 0
+    this.moves = this.moves > 0 ?  this.moves -= 1 : 0
   }
   checkWin() {
     if(this.points >= this.minWinPoints) {
@@ -161,7 +160,8 @@ export default class RootStore {
   }
 
   bfs(index) {
-    let color = this.tile.currentList.flat()[index]?.colorId
+    const flatList = this.tile.currentList.flat()
+    let color = flatList[index]?.colorId
     let result = []
 	  let queue = [index]
     let visited = new Set([])
@@ -171,7 +171,7 @@ export default class RootStore {
      this.field.cells[v].neighbors.forEach(neighbor => {
        if(
          !visited.has(neighbor) && 
-         this.tile.currentList.flat()[neighbor]?.colorId === color
+         flatList[neighbor]?.colorId === color
        ) {                  
          visited.add(neighbor)
          queue.push(neighbor)
