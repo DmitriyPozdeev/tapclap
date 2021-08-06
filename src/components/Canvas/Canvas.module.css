@@ -1,6 +1,7 @@
 .wrap {
   display: flex;
   justify-content: center;
+  margin: 0 auto;
   filter: drop-shadow(0 0 8.5px rgba(0,0,0,0.43));
   background-color: #020526;
   border: 10px solid #252e6d;

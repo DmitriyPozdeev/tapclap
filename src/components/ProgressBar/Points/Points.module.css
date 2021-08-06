@@ -1,10 +1,12 @@
 .wrap {
+  position: relative;
+  top: -10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: 200px;
-  height: 75px;
+  justify-content: flex-end;
+  width: 150px;
+  height: 85px;
   background-image: linear-gradient(0deg, #0f3c79 0%, #09203f 100%);
   border-radius: 10px;
   font-size: 24px;

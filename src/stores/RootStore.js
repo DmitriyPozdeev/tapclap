@@ -5,7 +5,7 @@ import FieldStore from './FieldStore'
 export default class RootStore {
   canvas = null
   context = null
-  minDestroy = 2
+  minDestroy = 7
   points = 0
   progress = 0
   minWinPoints = 5000
@@ -39,8 +39,8 @@ export default class RootStore {
   setIsOver(bool) {
     this.isOver = bool
   }
-  setUserState(state) {
-    this.userStatus = state
+  setUserStatus(status) {
+    this.userStatus = status
   }
   setProgress() {
     this.progress = (this.points / this.minWinPoints) * 100
@@ -49,7 +49,7 @@ export default class RootStore {
     this.canvas = canvas
     this.context = context
   }
-
+  
   addTiles(row, numRow) {
     const cols = this.field.size.cols
     const cellSize = this.field.cellSize
@@ -68,6 +68,7 @@ export default class RootStore {
     }
     count = 0
   }
+
   update() {
     if(this.field.isAnimate) {
       const cols = this.field.size.cols
@@ -86,12 +87,26 @@ export default class RootStore {
                 this.field.isAnimate = false
                 this.startCounter.clear()
                 this.stopCounter.clear()
+                this.checkEndGame()
               }
             }
           }
         })
         this.addTiles(row, i)
       })
+    }
+  }
+  checkEndGame() {
+    if(this.points >= this.minWinPoints) {
+      this.setUserStatus('win')
+    } 
+    else if(this.moves === 0) {
+      this.setUserStatus('lose')
+    }
+    if(!this.tile.checkList() && this.mixCount === 0){
+      this.setUserStatus('noMoves')
+    } else if(!this.tile.checkList()) {
+      this.setUserStatus('mix')
     }
   }
   run() {
@@ -106,6 +121,7 @@ export default class RootStore {
     this.context.fillRect(
       0, 0, this.canvas.width, this.canvas.height
     )
+    this.context.fillStyle = "white";
     this.renderDelete()
     this.renderTiles()
   }
@@ -124,6 +140,10 @@ export default class RootStore {
           this.tile.imgList[tile.colorId], 
           tile.xs, tile.ys, 
           this.field.cellSize, this.field.cellSize
+        )
+        this.context.fillText(
+          tile.index, 
+          tile.xs+ 10, tile.ys+ 20
         )
       })
     })
@@ -148,16 +168,6 @@ export default class RootStore {
   setMoves() {
     this.moves = this.moves > 0 ?  this.moves -= 1 : 0
   }
-  checkWin() {
-    if(this.points >= this.minWinPoints) {
-      this.setUserState('win')
-      this.setIsOver(true)
-    } 
-    else if(this.moves === 0) {
-      this.setUserState('lose')
-      this.setIsOver(true)
-    }
-  }
 
   bfs(index) {
     const flatList = this.tile.currentList.flat()
@@ -179,6 +189,7 @@ export default class RootStore {
        }
      })
     }
+    console.log(result.length >= this.minDestroy ? result : [] )
 	  return result.length >= this.minDestroy ? result : [] 
   }
   

@@ -56,8 +56,8 @@ export default class TailStore {
     return list
   }
  
-  checkList(list) {
-    const flatTileList = list.flat()
+  checkList() {
+    const flatTileList = this.currentList.flat()
     for (const tile of flatTileList) {
       if(this.root.bfs(tile.index).length >= this.root.minDestroy) {
         return true
@@ -65,23 +65,27 @@ export default class TailStore {
     }
     return false
   }
-  repairList(list) {
-    let counter = 0 
-    while(!this.checkList(list) && counter < 5) {
-      this.mixCurrentList()
-      counter++
-    }
-    if(counter === 5) {
-      alert('Игра не возможна, слишком высокое значение minDestroy')
-      this.setCurrentList([])
+
+  listCorrector(status) {
+    if(!this.checkList()) {
+      this.mixUntilValid(status)
     }
   }
-
-  initCurrentList() {
-    const list = this.createTileList()
-    if(!this.checkList(list)) {
-      this.repairList(list)
+  mixUntilValid(status) {
+    let counter = 0 
+    while(!this.checkList(this.currentList)) {
+      this.mixCurrentList()
+      counter++
+      if(counter === 5) {
+        this.root.setUserStatus(status)
+        this.setCurrentList([])
+        break
+      }
     }
+  }
+  initCurrentList() {
+    this.createTileList()
+    this.listCorrector('error')
   }
 
   setCurrentList(list) {

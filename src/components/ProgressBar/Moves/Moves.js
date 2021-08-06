@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { Context } from '../../index'
+import { Context } from '../../../index' 
 import { observer } from 'mobx-react-lite'
 import styles from './Moves.module.css'
 

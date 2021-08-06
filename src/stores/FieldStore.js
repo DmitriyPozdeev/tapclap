@@ -49,6 +49,7 @@ export default class FieldStore {
     const { index } = targetCell
     const delIndexes = this.root.bfs(index)
     const amountDelIndexes = delIndexes.length
+
     if(amountDelIndexes > 0 && !this.isAnimate) {
       this.isAnimate = true
       this.root.tile.setCurrentDelete(delIndexes)
@@ -61,6 +62,7 @@ export default class FieldStore {
           }
         }
       }
+
       const newTileList = this.root.tile.currentList
         .map((row) => {
           return row.filter(tile => tile)
@@ -71,29 +73,9 @@ export default class FieldStore {
         this.root.setProgress()
         this.root.setMoves()
         this.root.tile.setCurrentList(newTileList)
-        
-        this.checkMoves()
-        this.root.checkWin()
       }, 250)
     }
   }  
-  mix() {
-    this.root.tile.mixCurrentList()
-    this.root.setMixCount()
-    if(!this.checkMoves() && (this.root.mixCount === 0)) {
-      this.root.setIsOver(true)
-    }
-  }
-  checkMoves() {
-    const flatTileList = this.root.tile.currentList.flat()
-    for (const tile of flatTileList) {
-      if(this.root.bfs(tile.index).length >= this.root.minDestroy) {
-        return true
-      }
-    }
-    return false
-  }
-  
   get style() {
     return {
       width: this.size.cols * this.cellSize,
