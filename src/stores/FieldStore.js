@@ -1,30 +1,20 @@
 import { makeAutoObservable, computed } from 'mobx'
 import Cell from '../entitys/Cell'
-import Tile from '../entitys/Tile'
-
 
 export default class FieldStore {
   cells = []
   cols = []
-  cellSize = 70
+  cellSize = 60
   size = {
-    rows: 5,
-    cols: 4,
+    rows: 10,
+    cols: 9,
   }
+  isAnimate = false
   constructor(rootStore) {
     this.root = rootStore
     makeAutoObservable(this, {
       style: computed,
       cellsAmount: computed,
-    })
-  }
-  
-  getCellCoor(index) {
-    return this.cells[index].coor
-  }
-  getCol(num) {
-    return this.cells.slice().filter((cell) => {
-      return cell.index % this.size.cols === num 
     })
   }
   initCells() {
@@ -35,68 +25,12 @@ export default class FieldStore {
         ) 
       }
     }
-    console.log(this.cells)
   }
-  initCols() {
-    for (let i = 0; i < this.size.cols; i++) {
-      this.cols.push(this.getCol(i))
-    }
-  }
-  ofsetRow() {
-    const newCells = []
-    for (let i = 0; i < this.size.cols; i++) {
-      newCells.push(this.getCol(i).filter(cell => !cell.isEmpty()))
-    }
-    console.log(newCells)
-  }
-  mixTiles() {
-    const colorIds = this.cells
-    .slice()
-    .sort(() => Math.random() - 0.5)
-    .map( item => item.colorId)
-    this.clearField()
-    colorIds.map( colorId => {
-      const {xs, ys} = this.fillRandomEmptyCell(colorId)
-      const {tile} = new Tile(this.root, colorId)
-      this.root.context.drawImage(tile, xs, ys, this.cellSize, this.cellSize)
-    })
-  }
-  fillRandomEmptyCell(colorId) {//()
-    const emptyCells = this.cells.filter( cell => 
-      cell.colorId === null //cell.isEmpty
-    )
-    const indexCell = this.root.randomNum(emptyCells.length)
-    emptyCells[indexCell].colorId = colorId
-    const { coor } = emptyCells[indexCell]
-    return coor
-  }
-  fillCells() {
-    this.cells.map((cell) => {
-      const {tile, colorId} = new Tile(this.root)
-      const {xs, ys} = cell.getCoord()
-      cell.setColorId(colorId)
-      this.root.context.drawImage(tile, xs, ys, this.cellSize, this.cellSize)
-    })
-  }
-  clearField() {
-    this.cells.map(cell => cell.colorId = null)
-    this.root.context.clearRect(
-      0, 0, this.root.canvas.width, this.root.canvas.height
-    )
-  }
-  clearTile(index) { 
-    const {xs, ys} =  this.getCellCoor(index)
-    this.cells[index].colorId = null
-    this.root.context.clearRect(
-      xs, ys, this.cellSize, this.cellSize
-    )
-  
-  }
-  
+
   defineTargetCell(e) {
     const eventCoord = {
-      x: e.clientX - this.root.canvasCoor.x,
-      y: e.clientY - this.root.canvasCoor.y,
+      x: e.clientX - this.root.canvasCoord.x,
+      y: e.clientY - this.root.canvasCoord.y,
     }
     return this.cells.find(cell => {
       const { xs, xe, ys, ye } = cell.getCoord()
@@ -109,21 +43,37 @@ export default class FieldStore {
     })
   }
   click(e) {
-    this.root.isAnimation = true
+    const cols = this.size.cols
+    const rows = this.size.rows
     const targetCell = this.defineTargetCell(e)
     const { index } = targetCell
-    const deletedTiles = this.root.bfs(index)//const clearedCells = this.root.bfs(cell)
-    const lengthTiles = deletedTiles.length // const amountClearedCells = clearedCells.length
-    if (lengthTiles >= this.root.minDestroy && targetCell.colorId !== null) {//if(amountClearedCells > this.root.minDestroy && targetCell.colorId !== null) {}
-      deletedTiles.map( index => this.clearTile(index)) //clearedCells.map( cell => cell.clearTile())
-      this.ofsetRow()
-      this.root.setPoints(lengthTiles)
-      this.root.setAttempts()
-      deletedTiles.sort((a, b) => b-a).map(index => {
-        const positionInRow = index % this.size.cols
-        console.log(this.cells[this.cells[index].getNeighbors().top]?.isEmpty())
-  
-      })
+    const delIndexes = this.root.searcValidTile(index)
+    const amountDelIndexes = delIndexes.length
+
+    if(amountDelIndexes > 0 && !this.isAnimate) {
+      this.isAnimate = true
+      this.root.tile.setCurrentDelete(delIndexes)
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          if (this.root.tile.currentDelete
+               .includes(i * cols + j)) {
+            this.cells[i * cols + j].captureImage()
+            delete this.root.tile.currentList[i][j]
+          }
+        }
+      }
+
+      const newTileList = this.root.tile.currentList
+        .map((row) => {
+          return row.filter(tile => tile)
+        })
+
+      setTimeout(() => {
+        this.root.setPoints(amountDelIndexes)
+        this.root.setProgress()
+        this.root.setMoves()
+        this.root.tile.setCurrentList(newTileList)
+      }, 250)
     }
   }  
   get style() {

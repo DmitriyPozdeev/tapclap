@@ -1,8 +1,9 @@
 import { useRef, useEffect, useContext } from 'react'
 import { Context } from '../../index'
+import { observer } from 'mobx-react-lite'
 import styles from './Canvas.module.css'
 
-const Canvas = (props) => {
+const Canvas = observer(() => {
   const { root } = useContext(Context)
   const canvasRef = useRef(null)
 
@@ -12,12 +13,13 @@ const Canvas = (props) => {
     root.start({canvas, context})
   }, [])
 
-  return (
+  return ( 
     <div 
       className={styles.wrap} 
       style={{
-        width: root.field.style.width + 8,
-        height: root.field.style.height + 8,
+        width: root.field.style.width + 14,
+        height: root.field.style.height + 14,
+        cursor: root.field.isAnimate ? 'wait' : 'pointer'
       }}
     >
       <canvas
@@ -30,6 +32,6 @@ const Canvas = (props) => {
       </canvas>
     </div>
   )
-}
+})
 
 export default Canvas

@@ -1,0 +1,65 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.modal.active {
+  display: flex;
+}
+
+.content {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding:  0 20px;
+  border-radius: 10px;
+  background-image: linear-gradient(0deg, #0f3c79 0%, #09203f 100%);
+  box-shadow: -1px 2px 19px 19px rgba(34, 60, 80, 0.2);
+  height: 300px;
+  text-align: center;
+  font-size: 25px;
+}
+.title {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  width: 100%;
+  padding: 10px 0 10px 0;
+  margin: 0; 
+  border-radius: 10px 10px 0 0;
+  line-height: 25px;
+  font-size: 25px;
+  vertical-align: middle;
+  text-align: center;
+  background-image: linear-gradient(0deg, #0f3c79 0%, #09203f 100%);
+}
+
+.error {
+  background-image: linear-gradient(0deg, #a10611 0%, #ff9eb1 100%);
+}
+.win {
+  background-image: linear-gradient(0deg, #006723 0%, #6fd14c 100%);
+}
+.lose {
+  background-image: linear-gradient(0deg, #b57200 0%, #e9b644 100%);
+}
+.noMoves {
+  background-image: linear-gradient(0deg, #b57200 0%, #e9b644 100%);
+}
+.mix {
+  background-image: linear-gradient(0deg, #971f74 0%, #ffa2ec 100%);
+}
+.close {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  cursor: pointer;
+}

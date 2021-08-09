@@ -1,20 +1,14 @@
 import './App.css';
-import Canvas from './components/Canvas/Canvas';
-import Points from './components/Points/Points'
-import {useContext} from 'react'
-import {Context} from './index.js'
+import Canvas from './components/Canvas/Canvas'
+import ProgressBar from './components/ProgressBar/ProgressBar'
+import Modal from './components/Modal/Modal'
 
 function App() {
-  const {root} = useContext(Context)
   return (
     <>
+      <ProgressBar/>
       <Canvas/>
-      <button
-        onClick={() => root.field.mixTiles()}
-      >
-        Перемешать
-      </button>
-      <Points/>
+      <Modal/>
     </>
   );
 }
