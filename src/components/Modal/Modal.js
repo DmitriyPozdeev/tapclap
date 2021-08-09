@@ -5,86 +5,47 @@ import style from './Modal.module.css'
 
 const Modal = observer(() => {
   const { root } = useContext(Context)
-  const messages = {
-    process: {
-      title: null,
-      text: null,
-      smile: null,
-    },
-    error: {
-      title: 'ОШИБКА',
-      text: 'Игра невозможна, слишком высокое значение _minDestroy',
-      smile: null,
-    },
-    start: {
-      title: 'ПРАВИЛА',
-      text: `При клике на тайл сжигается область, 
-      состоящая из группы прилегающих тайлов того же цвета, 
-      размер группы не может быть меньше чем ${root._minDestroy}`,
-      smile: null,
-    },
-    win: {
-      title: 'ПОБЕДА',
-      text: 'Вы победили!',
-      smile: <span>&#129321;</span>,
-    },
-    lose: {
-      title: 'ПРОИГРЫШ',
-      text: 'Вы проиграли',
-      smile: <span>&#128577;</span>,
-    },
-    mix: {
-      title: 'ПЕРЕМЕШАТЬ',
-      text: `У Вас нет ходов, 
-      поле будет перемешано`,
-      smile: <span>&#8635;</span>,
-    },
-    noMoves: {
-      title: 'НЕТ ХОДОВ',
-      text: `У Вас нет ходов, 
-      вы проиграли`,
-      smile: <span>&#128577;</span>,
-    },
-  }
-  const [message, setMessage] = useState({default: null, smile: null})
+
   const [isActive, setIsActive] = useState(false)
   useEffect(() => {
-    setMessage(messages[root._userStatus])
-    if(root._userStatus !== 'process') {
+    if(root.user.status !== 'process') {
       setIsActive(true)
     }
-  }, [root._userStatus])
-
-  const Smile =  () => message.smile
+  }, [root.user.status])
 
   const closeHandle = () => {
     setIsActive(false)
-    if(root._userStatus !== 'mix') {
-      root.resetAll()
+    if(root.user.status !== 'mix') {
+      root.user.reset()
     }
-    else if(root._userStatus === 'mix') {
+    else if(root.user.status === 'mix') {
       setTimeout(() => {
-        root.setMixCount()
-        root.setUserStatus('process')
+        root.user.setMixCount()
+        root.user.setStatus('process')
         root.tile.listCorrector('noMoves')
-      }, 180)
+      }, 200)
       
     }
   }
+
+  const Smile =  () => root.ui.currentMessage.smile
+  
   return (
     <div 
       className={isActive ? `${style.modal} ${style.active}` : style.modal} 
       onClick={closeHandle}
     >
       <div 
-        style={{width: root.field.style.width - 30}}
+        style={{
+          width: root.ui.fieldSize.width,
+        }}
         className={style.content}
         onClick={e => e.stopPropagation()}
       > 
       <h2
-        className={`${style.title} ${style[root._userStatus]}`}
+        className={`${style.title} ${style[root.user.status]}`}
       >
-        {message.title}
+        {root.ui.currentMessage.title}
       </h2>
       <span
         className={style.close}
@@ -92,7 +53,7 @@ const Modal = observer(() => {
       >
        &#10006;
       </span>
-        {message.text}
+        {root.ui.currentMessage.text}
         <Smile/>
       </div>
     </div>

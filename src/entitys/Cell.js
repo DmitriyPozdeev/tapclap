@@ -3,22 +3,22 @@ export default class Cell {
     this.store = store
     this.image = null
     this.colorId = null
-    this.coord = {
+    this._coord = {
       xs: col * (this.store.cellSize), 
       ys: row * (this.store.cellSize),
       xe: col * (this.store.cellSize) + this.store.cellSize,
       ye: row * (this.store.cellSize) + this.store.cellSize,
     }
-    this.animateData = {
+    this._animateData = {
       x: 0,
       y: 0,
       w: this.store.cellSize,
       h: this.store.cellSize, 
     }
-    this.index = this.store.size.cols * row + col
-    this.neighbors = this.getNeighbors()
+    this._index = this.store.size.cols * row + col
+    this._neighbors = this.getNeighbors()
   }
-  sephia(imageData) {
+  deleteEffect(imageData) {
     const pixels = imageData.data;
     for (let i = 0; i < pixels.length; i += 16) {
       const r = pixels[i];
@@ -30,40 +30,31 @@ export default class Cell {
     }
     return imageData;
   }
-  inPlace() {
-    if(this.store.root.tile.currentList.flat().length === this.store.cells.length) {
-      return this.store.root.tile.currentList.flat()[this.index].xs !== this.coord.xs
-    }
-    return false
-  }
   captureImage() {
-    this.image = this.store.root.context.getImageData(
+    this.image = this.store.root.game.context.getImageData(
       this.coord.xs, this.coord.ys, this.store.cellSize, this.store.cellSize
     )
-    this.sephia(this.image)
+    this.deleteEffect(this.image)
   }
   animateImage() {
-    this.store.root.context.putImageData(
+    this.store.root.game.context.putImageData(
       this.image, 
       this.coord.xs, 
       this.coord.ys,
-      this.animateData.x += 1.5,
-      this.animateData.y += 1.5,
-      this.animateData.w >= 0 ? this.animateData.w -= 3 : 0,
-      this.animateData.h >= 0 ? this.animateData.h -= 3 : 0,
+      this._animateData.x += 1.5,
+      this._animateData.y += 1.5,
+      this._animateData.w >= 0 ? this._animateData.w -= 3 : 0,
+      this._animateData.h >= 0 ? this._animateData.h -= 3 : 0,
     )
   }
   reset() {
     this.image = null
-    this.animateData = {
+    this._animateData = {
       x: 0,
       y: 0,
       w: this.store.cellSize,
       h: this.store.cellSize, 
     }
-  }
-  getCoord() {
-    return this.coord
   }
   getNeighbors() {
     const index = this.index
@@ -92,5 +83,17 @@ export default class Cell {
       }
     }
     return indexes
+  }
+  get coord() {
+    return this._coord
+  }
+  get index() {
+    return this._index
+  }
+  get neighbors() {
+    return this._neighbors
+  }
+  get animateData() {
+    return this._animateData
   }
 } 

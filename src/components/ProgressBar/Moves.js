@@ -3,7 +3,7 @@ import { Context } from '../../index'
 import { observer } from 'mobx-react-lite'
 import styles from './ProgressBar.module.css'
 
-const Points = observer(() => {
+const Moves = observer(() => {
   const { root } = useContext(Context)
   return (
     <div 
@@ -12,9 +12,9 @@ const Points = observer(() => {
       <span>
         ХОДЫ
       </span>
-      {root._moves}
+      {root.ui.balanceMoves}
     </div>
   )
 }) 
 
-export default Points
+export default Moves

@@ -17,7 +17,9 @@ const Progress = observer(() => {
           <div 
             className={styles.completeProgress}
             style={{
-              width: root.progress < 100 ? `${root.progress}%` : '100%'
+              width: root.ui.progress < 100 ? 
+                `${root.ui.progress}%` : 
+                '100%'
             }}
           ></div>
         </div>

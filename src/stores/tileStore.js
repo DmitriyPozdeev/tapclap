@@ -6,10 +6,10 @@ import red from '../assets/main/blocks/red.png'
 import yellow from '../assets/main/blocks/yellow.png'
 
 export default class TailStore {
-  srcs = [red, green, blue, purple, yellow]
-  imgList = []
-  currentList = []
-  currentDelete = []
+  _srcs = [red, green, blue, purple, yellow]
+  _imgList = []
+  _currentList = []
+  _currentDelete = []
 
   constructor(rootStore) {
     this.root = rootStore
@@ -40,13 +40,13 @@ export default class TailStore {
     const rows = this.root.field.size.rows
     const cols = this.root.field.size.cols
     const cellSize = this.root.field.cellSize
-    const amountSrcs = this.srcs.length
+    const amountsrcs = this.srcs.length
 
     const list = [...Array(rows)].map((_, i) => { 
       return [...Array(cols)].map((_, j) => {
         return {
           index: i * cols + j,
-          colorId: this.root.randomNum(amountSrcs),
+          colorId: this.root.randomNum(amountsrcs),
           xs: j * cellSize,
           ys: i * cellSize,
         }
@@ -58,7 +58,7 @@ export default class TailStore {
   checkList() {
     const flatTileList = this.currentList.flat()
     for (const tile of flatTileList) {
-      if(this.root.searcValidTile(tile.index).length >= this.root._minDestroy) {
+      if(this.root.game.searchValidTile(tile.index).length >= this.root.game.minDestroy) {
         return true
       }
     }
@@ -76,7 +76,7 @@ export default class TailStore {
       this.mixCurrentList()
       counter++
       if(counter === 5) {
-        this.root.setUserStatus(status)
+        this.root.user.setStatus(status)
         this.setCurrentList([])
         break
       }
@@ -88,7 +88,7 @@ export default class TailStore {
   }
 
   setCurrentList(list) {
-    this.currentList = list
+    this._currentList = list
   }
 
   getMixedColorList() {
@@ -111,6 +111,16 @@ export default class TailStore {
 
   setCurrentDelete(indexesArray) {
     this.currentDelete = indexesArray
+  }
+
+  get currentList() {
+    return this._currentList
+  }
+  get srcs() {
+    return this._srcs
+  }
+  get imgList() {
+    return this._imgList
   }
 }
 

@@ -5,7 +5,7 @@ import styles from './ProgressBar.module.css'
 
 const Points = observer(() => {
   const { root } = useContext(Context)
-
+ 
   return (
     <div 
       className={styles.item} 
@@ -13,7 +13,7 @@ const Points = observer(() => {
       <span>
         ОЧКИ
       </span>
-      {root.points}
+      {root.user.points}
     </div>
   )
 })

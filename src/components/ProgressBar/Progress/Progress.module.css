@@ -8,8 +8,8 @@
   justify-content: flex-end;
   align-items: center;
   width: 400px;
-  height: 127px;
-  border-radius: 15px;
+  height: 85px;
+  border-radius: 0 0 10px 10px;
   background-image: linear-gradient(0deg, #0f3c79 0%, #09203f 100%);
 }
 .allProgress {

@@ -2,18 +2,16 @@ import { makeAutoObservable, computed } from 'mobx'
 import Cell from '../entitys/Cell'
 
 export default class FieldStore {
-  cells = []
-  cols = []
-  cellSize = 60
-  size = {
+  _cells = []
+  _cellSize = 60
+  _isAnimate = false
+  _size = {
     rows: 10,
     cols: 9,
   }
-  isAnimate = false
   constructor(rootStore) {
     this.root = rootStore
     makeAutoObservable(this, {
-      style: computed,
       cellsAmount: computed,
     })
   }
@@ -25,15 +23,17 @@ export default class FieldStore {
         ) 
       }
     }
+  } 
+  setAnimate(bool) {
+    this._isAnimate = bool
   }
-
   defineTargetCell(e) {
     const eventCoord = {
-      x: e.clientX - this.root.canvasCoord.x,
-      y: e.clientY - this.root.canvasCoord.y,
+      x: e.clientX - this.root.game.canvasCoord.x,
+      y: e.clientY - this.root.game.canvasCoord.y,
     }
     return this.cells.find(cell => {
-      const { xs, xe, ys, ye } = cell.getCoord()
+      const { xs, xe, ys, ye } = cell.coord
       return (
         (xs <= eventCoord.x) &&  
         (xe >= eventCoord.x) &&
@@ -47,11 +47,11 @@ export default class FieldStore {
     const rows = this.size.rows
     const targetCell = this.defineTargetCell(e)
     const { index } = targetCell
-    const delIndexes = this.root.searcValidTile(index)
+    const delIndexes = this.root.game.searchValidTile(index)
     const amountDelIndexes = delIndexes.length
 
     if(amountDelIndexes > 0 && !this.isAnimate) {
-      this.isAnimate = true
+      this.setAnimate(true)
       this.root.tile.setCurrentDelete(delIndexes)
       for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
@@ -69,20 +69,26 @@ export default class FieldStore {
         })
 
       setTimeout(() => {
-        this.root.setPoints(amountDelIndexes)
-        this.root.setProgress()
-        this.root.setMoves()
+        this.root.user.setPoints(amountDelIndexes)
+        this.root.user.setMovesCount()
         this.root.tile.setCurrentList(newTileList)
       }, 250)
     }
   }  
-  get style() {
-    return {
-      width: this.size.cols * this.cellSize,
-      height: this.size.rows * this.cellSize,
-    }
-  }
   get cellsAmount() {
     return this.size.rows * this.size.cols
   }
+  get size() {
+    return this._size
+  }
+  get cellSize() {
+    return this._cellSize
+  }
+  get cells() {
+    return this._cells
+  }
+  get isAnimate() {
+    return this._isAnimate
+  }
+
 }

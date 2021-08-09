@@ -10,23 +10,23 @@ const Canvas = observer(() => {
   useEffect(() => {
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
-    root.start({canvas, context})
+    root.game.start({canvas, context})
   }, [])
 
   return ( 
     <div 
       className={styles.wrap} 
       style={{
-        width: root.field.style.width + 14,
-        height: root.field.style.height + 14,
+        width: root.ui.fieldSize.width + 14,
+        height: root.ui.fieldSize.height + 14,
         cursor: root.field.isAnimate ? 'wait' : 'pointer'
       }}
     >
       <canvas
         ref={canvasRef}
         className={styles.field}
-        width={root.field.style.width}  
-        height={root.field.style.height}
+        width={root.ui.fieldSize.width}  
+        height={root.ui.fieldSize.height}
         onClick={(e) => root.field.click(e)}
       > 
       </canvas>
