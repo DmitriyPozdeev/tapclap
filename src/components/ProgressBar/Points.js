@@ -1,20 +1,21 @@
 import { useContext } from 'react'
-import { Context } from '../../../index' 
+import { Context } from '../../index'
 import { observer } from 'mobx-react-lite'
-import styles from './Moves.module.css'
+import styles from './ProgressBar.module.css'
 
 const Points = observer(() => {
   const { root } = useContext(Context)
+
   return (
     <div 
-      className={styles.wrap} 
+      className={styles.item} 
     >
-      <span className={styles.label}>
-        ХОДЫ
+      <span>
+        ОЧКИ
       </span>
-      {root.moves}
+      {root.points}
     </div>
   )
-}) 
+})
 
 export default Points

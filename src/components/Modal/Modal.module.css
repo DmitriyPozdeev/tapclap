@@ -18,11 +18,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding:  0 10px;
+  padding:  0 20px;
   border-radius: 10px;
   background-image: linear-gradient(0deg, #0f3c79 0%, #09203f 100%);
   box-shadow: -1px 2px 19px 19px rgba(34, 60, 80, 0.2);
-  width: 500px;
   height: 300px;
   text-align: center;
   font-size: 25px;
@@ -41,6 +40,22 @@
   vertical-align: middle;
   text-align: center;
   background-image: linear-gradient(0deg, #0f3c79 0%, #09203f 100%);
+}
+
+.error {
+  background-image: linear-gradient(0deg, #a10611 0%, #ff9eb1 100%);
+}
+.win {
+  background-image: linear-gradient(0deg, #006723 0%, #6fd14c 100%);
+}
+.lose {
+  background-image: linear-gradient(0deg, #b57200 0%, #e9b644 100%);
+}
+.noMoves {
+  background-image: linear-gradient(0deg, #b57200 0%, #e9b644 100%);
+}
+.mix {
+  background-image: linear-gradient(0deg, #971f74 0%, #ffa2ec 100%);
 }
 .close {
   position: absolute;

@@ -53,13 +53,12 @@ export default class TailStore {
       })
     })
     this.setCurrentList(list)
-    return list
   }
  
   checkList() {
     const flatTileList = this.currentList.flat()
     for (const tile of flatTileList) {
-      if(this.root.bfs(tile.index).length >= this.root.minDestroy) {
+      if(this.root.searcValidTile(tile.index).length >= this.root._minDestroy) {
         return true
       }
     }

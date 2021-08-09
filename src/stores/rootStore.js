@@ -3,19 +3,23 @@ import TileStore from './TileStore'
 import FieldStore from './FieldStore'
 
 export default class RootStore {
+  _minWinPoints = 5000
+  _minDestroy = 7
+  _stepRatio = 50
+  _moves = 18
+  _mixes = 2
+  _userStatus = 'start'
+  _startCounter = new Set([])
+  _stopCounter = new Set([])
   canvas = null
   context = null
-  minDestroy = 7
   points = 0
   progress = 0
-  minWinPoints = 5000
-  stepRatio = 50
-  mixCount = 2
-  moves = 18
-  isOver = false
-  userStatus = 'start'
-  startCounter = new Set([])
-  stopCounter = new Set([])
+  mixCount = 0
+  movesCount = 0
+  
+  
+  
   constructor() {
     this.tile = new TileStore(this)
     this.field = new FieldStore(this)
@@ -24,26 +28,36 @@ export default class RootStore {
       offsetSpeed: computed,
     }) 
   }
+  setStartCounter(index) {
+    this._startCounter.add(index)
+  }
+  setStopCounter(index) {
+    this._stopCounter.add(index)
+  }
+  equalityCounters() {
+    return  this._startCounter.size ===  this._stopCounter.size
+  }
+  clearStartStopCounters() {
+    this._startCounter.clear()
+    this._stopCounter.clear()
+  }
+
   resetAll() {
+    this.setUserStatus('process')
     this.points = 0
     this.progress = 0
-    this.mixCount = 2
-    this.moves = 18
-    this.isOver = false
+    this.mixCount = 0
+    this.movesCount = 0
     this.tile.initCurrentList()
-
   }
   setMixCount() {
-    this.mixCount = this.mixCount !== 0 ? this.mixCount -= 1 : 0
-  }
-  setIsOver(bool) {
-    this.isOver = bool
+    this.mixCount = this.mixCount < this._mixes ? this.mixCount += 1 : this._mixes
   }
   setUserStatus(status) {
-    this.userStatus = status
+    this._userStatus = status
   }
   setProgress() {
-    this.progress = (this.points / this.minWinPoints) * 100
+    this.progress = (this.points / this._minWinPoints) * 100
   }
   initGame({canvas, context}) {
     this.canvas = canvas
@@ -54,19 +68,16 @@ export default class RootStore {
     const cols = this.field.size.cols
     const cellSize = this.field.cellSize
     let diff = cols - row.length
-    let count = 0
-    for(let j = diff; row.length < cols; j++) {
+    for(let j = 0; j < diff; j++) {
       row.push({
         index: numRow * cols,
         colorId: this.randomNum(this.tile.srcs.length),
         xs: cols * cellSize + 
             diff  * cellSize + 
-            count * cellSize * 1.5,
+            j * cellSize * 1.5,
         ys: numRow * cellSize,
       })
-      count+=1
     }
-    count = 0
   }
 
   update() {
@@ -77,16 +88,15 @@ export default class RootStore {
           const currentIndex = i * cols + j
           const { xs } = this.field.cells[currentIndex].getCoord()
           if(tile.index !== currentIndex) {
-            this.startCounter.add(currentIndex)
+            this.setStartCounter(currentIndex)
             tile.xs -= this.offsetSpeed
             if(tile.xs === xs){
-              this.stopCounter.add(currentIndex)
+              this.setStopCounter(currentIndex)
               tile.index = currentIndex
               this.field.cells[currentIndex].reset()
-              if(this.startCounter.size === this.stopCounter.size){
+              if(this.equalityCounters()){
                 this.field.isAnimate = false
-                this.startCounter.clear()
-                this.stopCounter.clear()
+                this.clearStartStopCounters()
                 this.checkEndGame()
               }
             }
@@ -97,13 +107,13 @@ export default class RootStore {
     }
   }
   checkEndGame() {
-    if(this.points >= this.minWinPoints) {
+    if(this.points >= this._minWinPoints) {
       this.setUserStatus('win')
     } 
-    else if(this.moves === 0) {
+    else if(this._moves === 0) {
       this.setUserStatus('lose')
     }
-    if(!this.tile.checkList() && this.mixCount === 0){
+    if(!this.tile.checkList() && this.mixCount === this._mixes){
       this.setUserStatus('noMoves')
     } else if(!this.tile.checkList()) {
       this.setUserStatus('mix')
@@ -121,7 +131,6 @@ export default class RootStore {
     this.context.fillRect(
       0, 0, this.canvas.width, this.canvas.height
     )
-    this.context.fillStyle = "white";
     this.renderDelete()
     this.renderTiles()
   }
@@ -140,11 +149,7 @@ export default class RootStore {
           this.tile.imgList[tile.colorId], 
           tile.xs, tile.ys, 
           this.field.cellSize, this.field.cellSize
-        )
-        this.context.fillText(
-          tile.index, 
-          tile.xs+ 10, tile.ys+ 20
-        )
+        )   
       })
     })
   }
@@ -161,15 +166,15 @@ export default class RootStore {
 
   setPoints(amount) {
     this.points += 
-      (amount * this.stepRatio) + 
-      this.stepRatio * 
-      (amount - this.minDestroy)
+      (amount * this._stepRatio) + 
+      this._stepRatio * 
+      (amount - this._minDestroy)
   }
   setMoves() {
-    this.moves = this.moves > 0 ?  this.moves -= 1 : 0
+    this._moves = this._moves > 0 ?  this._moves -= 1 : 0
   }
 
-  bfs(index) {
+  searcValidTile(index) {
     const flatList = this.tile.currentList.flat()
     let color = flatList[index]?.colorId
     let result = []
@@ -189,14 +194,13 @@ export default class RootStore {
        }
      })
     }
-    console.log(result.length >= this.minDestroy ? result : [] )
-	  return result.length >= this.minDestroy ? result : [] 
+	  return result.length >= this._minDestroy ? result : [] 
   }
   
   randomNum(max) {
     return Math.floor(Math.random() * max) 
   }
-  get canvasCoor() {
+  get canvasCoord() {
     return this.canvas.getBoundingClientRect()
   }
   get offsetSpeed() {

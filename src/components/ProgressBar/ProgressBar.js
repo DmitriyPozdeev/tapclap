@@ -1,6 +1,6 @@
 
-import Points from './Points/Points'
-import Moves from './Moves/Moves'
+import Points from './Points'
+import Moves from './Moves'
 import Progress from './Progress/Progress'
 import styles from './ProgressBar.module.css'
 

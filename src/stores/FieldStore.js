@@ -29,8 +29,8 @@ export default class FieldStore {
 
   defineTargetCell(e) {
     const eventCoord = {
-      x: e.clientX - this.root.canvasCoor.x,
-      y: e.clientY - this.root.canvasCoor.y,
+      x: e.clientX - this.root.canvasCoord.x,
+      y: e.clientY - this.root.canvasCoord.y,
     }
     return this.cells.find(cell => {
       const { xs, xe, ys, ye } = cell.getCoord()
@@ -47,7 +47,7 @@ export default class FieldStore {
     const rows = this.size.rows
     const targetCell = this.defineTargetCell(e)
     const { index } = targetCell
-    const delIndexes = this.root.bfs(index)
+    const delIndexes = this.root.searcValidTile(index)
     const amountDelIndexes = delIndexes.length
 
     if(amountDelIndexes > 0 && !this.isAnimate) {
