@@ -44,7 +44,6 @@ export default class FieldStore {
   }
   click(e) {
     const cols = this.size.cols
-    const rows = this.size.rows
     const targetCell = this.defineTargetCell(e)
     const { index } = targetCell
     const delIndexes = this.root.game.searchValidTile(index)
@@ -53,15 +52,16 @@ export default class FieldStore {
     if(amountDelIndexes > 0 && !this.isAnimate) {
       this.setAnimate(true)
       this.root.tile.setCurrentDelete(delIndexes)
-      for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < cols; j++) {
+      
+      this.root.tile.currentList.forEach((row, numRow) => {
+        row.forEach((_, numCol) => {
           if (this.root.tile.currentDelete
-               .includes(i * cols + j)) {
-            this.cells[i * cols + j].captureImage()
-            delete this.root.tile.currentList[i][j]
+            .includes(numRow * cols + numCol)) {
+            this.cells[numRow * cols + numCol].captureImage()
+            delete this.root.tile.currentList[numRow][numCol]
           }
-        }
-      }
+        })
+      })
 
       const newTileList = this.root.tile.currentList
         .map((row) => {
@@ -90,5 +90,4 @@ export default class FieldStore {
   get isAnimate() {
     return this._isAnimate
   }
-
 }

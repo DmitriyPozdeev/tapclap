@@ -2,6 +2,7 @@
 import Points from './Points'
 import Moves from './Moves'
 import Progress from './Progress/Progress'
+import RemainingPoints from './RemainingPoints'
 import styles from './ProgressBar.module.css'
 
 const ProgressBar = () => {
@@ -12,6 +13,7 @@ const ProgressBar = () => {
       <Moves/>
       <Points/>
       <Progress/>
+      <RemainingPoints/>
     </div>
   )
 }

@@ -18,7 +18,7 @@ export default class UIStore {
         title: 'ПРАВИЛА',
         text: `При клике на тайл сжигается область, 
         состоящая из группы прилегающих тайлов того же цвета, 
-        размер группы не может быть меньше чем ${this.root.minDestroy}`,
+        размер группы не может быть меньше чем ${this.root.game.minDestroy}`,
         smile: null,
       },
       win: {
@@ -40,8 +40,8 @@ export default class UIStore {
       },
       noMoves: {
         title: 'НЕТ ХОДОВ',
-        text: `У Вас нет доступных ходов 
-        и исчерпан лимит перемешиваний,
+        text: `Попытки перемешиваний исчерпаны,
+        у вас нет доступных ходов,
         вы проиграли`,
         smile: <span>&#128577;</span>,
       },
@@ -52,6 +52,13 @@ export default class UIStore {
   }
   get progress() {
     return  (this.root.user.points / this.root.game.minWinPoints) * 100
+  }
+  get remaining() {
+    return (
+      this.root.user.points  < this.root.game.minWinPoints ?
+      this.root.game.minWinPoints - this.root.user.points : 
+      0
+    )
   }
   get balanceMoves() {
     return this.root.game.moves - this.root.user.movesCount

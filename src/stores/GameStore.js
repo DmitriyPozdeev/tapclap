@@ -58,9 +58,9 @@ export default class GameStore {
   update() {
     if(this.root.field.isAnimate) {
       const cols = this.root.field.size.cols
-      this.root.tile.currentList.forEach((row, i) => {
-        row.forEach((tile, j) => {
-          const currentIndex = i * cols + j
+      this.root.tile.currentList.forEach((row, numRow) => {
+        row.forEach((tile, numCol) => {
+          const currentIndex = numRow * cols + numCol
           const { xs } = this.root.field.cells[currentIndex].coord
           if(tile.index !== currentIndex) {
             this.setStartCounter(currentIndex)
@@ -77,7 +77,7 @@ export default class GameStore {
             }
           }
         })
-        this.addTiles(row, i)
+        this.addTiles(row, numRow)
       })
     }
   }
@@ -95,7 +95,8 @@ export default class GameStore {
     if(this.root.field.isAnimate) {
       this.root.field.cells.forEach(cell => {
         const { index } = cell
-        if (cell.image && this.root.tile.currentDelete.includes(index)) {
+        if (cell.image && 
+        this.root.tile.currentDelete.includes(index)) {
           cell.animateImage()
         }
       })
@@ -118,13 +119,13 @@ export default class GameStore {
     const cols = this.root.field.size.cols
     const cellSize = this.root.field.cellSize
     let diff = cols - row.length
-    for(let j = 0; j < diff; j++) {
+    for(let addedTileNum = 0; addedTileNum < diff; addedTileNum++) {
       row.push({
         index: numRow * cols,
         colorId: this.root.randomNum(this.root.tile.srcs.length),
         xs: cols * cellSize + 
             diff  * cellSize + 
-            j * cellSize * 1.5,
+            addedTileNum * cellSize * 1.5,
         ys: numRow * cellSize,
       })
     }
@@ -136,7 +137,8 @@ export default class GameStore {
     else if(this.root.user.movesCount === this.moves) {
       this.root.user.setStatus('lose')
     }
-    if(!this.root.tile.checkList() && this.root.user.mixCount === this.mixes){
+    if(!this.root.tile.checkList() && 
+    this.root.user.mixCount === this.mixes){
       this.root.user.setStatus('noMoves')
     } else if(!this.root.tile.checkList()) {
       this.root.user.setStatus('mix')
@@ -163,7 +165,7 @@ export default class GameStore {
        } 
      })
     }
-	  return result.length >= this._minDestroy ? result : [] 
+	  return result.length >= this.minDestroy ? result : [] 
   }
   get stepRatio() {
     return this._stepRatio

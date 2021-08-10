@@ -58,7 +58,8 @@ export default class TailStore {
   checkList() {
     const flatTileList = this.currentList.flat()
     for (const tile of flatTileList) {
-      if(this.root.game.searchValidTile(tile.index).length >= this.root.game.minDestroy) {
+      if(this.root.game.searchValidTile(tile.index).length >= 
+      this.root.game.minDestroy) {
         return true
       }
     }
@@ -86,11 +87,9 @@ export default class TailStore {
     this.createTileList()
     this.listCorrector('error')
   }
-
   setCurrentList(list) {
     this._currentList = list
   }
-
   getMixedColorList() {
     return this.currentList
     .flat()

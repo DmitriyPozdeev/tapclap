@@ -11,7 +11,7 @@ const Canvas = observer(() => {
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
     root.game.start({canvas, context})
-  }, [])
+  }, [root.game])
 
   return ( 
     <div 

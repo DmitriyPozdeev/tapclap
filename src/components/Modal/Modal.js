@@ -23,7 +23,7 @@ const Modal = observer(() => {
         root.user.setMixCount()
         root.user.setStatus('process')
         root.tile.listCorrector('noMoves')
-      }, 200)
+      }, 250)
       
     }
   }

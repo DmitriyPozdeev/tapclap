@@ -1,8 +1,7 @@
 export default class Cell {
   constructor(store, row, col) {
     this.store = store
-    this.image = null
-    this.colorId = null
+    this._image = null
     this._coord = {
       xs: col * (this.store.cellSize), 
       ys: row * (this.store.cellSize),
@@ -24,17 +23,17 @@ export default class Cell {
       const r = pixels[i];
       const g = pixels[i + 1];
       const b = pixels[i + 2];
-      pixels[i]     = r+g+b; // red
-      pixels[i + 1] = r+g+b; // green
-      pixels[i + 2] = r+g+b; // blue
+      pixels[i]     = r+g+b; 
+      pixels[i + 1] = r+g+b;
+      pixels[i + 2] = r+g+b;
     }
     return imageData;
   }
   captureImage() {
-    this.image = this.store.root.game.context.getImageData(
+    this._image = this.store.root.game.context.getImageData(
       this.coord.xs, this.coord.ys, this.store.cellSize, this.store.cellSize
     )
-    this.deleteEffect(this.image)
+    this.deleteEffect(this._image)
   }
   animateImage() {
     this.store.root.game.context.putImageData(
@@ -48,7 +47,7 @@ export default class Cell {
     )
   }
   reset() {
-    this.image = null
+    this._image = null
     this._animateData = {
       x: 0,
       y: 0,
@@ -83,6 +82,9 @@ export default class Cell {
       }
     }
     return indexes
+  }
+  get image() {
+    return this._image
   }
   get coord() {
     return this._coord
