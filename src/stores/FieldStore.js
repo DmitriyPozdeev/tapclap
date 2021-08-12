@@ -46,7 +46,7 @@ export default class FieldStore {
     const cols = this.size.cols
     const targetCell = this.defineTargetCell(e)
     const { index } = targetCell
-    const delIndexes = this.root.game.searchValidTile(index)
+    const delIndexes = this.root.game.searchValidTiles(index)
     const amountDelIndexes = delIndexes.length
 
     if(amountDelIndexes > 0 && !this.isAnimate) {

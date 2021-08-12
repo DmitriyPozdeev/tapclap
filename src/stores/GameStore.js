@@ -145,7 +145,7 @@ export default class GameStore {
     }
   }
   
-  searchValidTile(index) {
+  searchValidTiles(index) {
     const flatList = this.root.tile.currentList.flat()
     let color = flatList[index]?.colorId
     let result = []

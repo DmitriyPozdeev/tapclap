@@ -40,15 +40,15 @@ export default class TailStore {
     const rows = this.root.field.size.rows
     const cols = this.root.field.size.cols
     const cellSize = this.root.field.cellSize
-    const amountsrcs = this.srcs.length
+    const amountSrcs = this.srcs.length
 
-    const list = [...Array(rows)].map((_, i) => { 
-      return [...Array(cols)].map((_, j) => {
+    const list = [...Array(rows)].map((_, rowNum) => { 
+      return [...Array(cols)].map((_, colNum) => {
         return {
-          index: i * cols + j,
-          colorId: this.root.randomNum(amountsrcs),
-          xs: j * cellSize,
-          ys: i * cellSize,
+          index: rowNum * cols + colNum,
+          colorId: this.root.randomNum(amountSrcs),
+          xs: colNum * cellSize,
+          ys: rowNum * cellSize,
         }
       })
     })
@@ -58,7 +58,7 @@ export default class TailStore {
   checkList() {
     const flatTileList = this.currentList.flat()
     for (const tile of flatTileList) {
-      if(this.root.game.searchValidTile(tile.index).length >= 
+      if(this.root.game.searchValidTiles(tile.index).length >= 
       this.root.game.minDestroy) {
         return true
       }
