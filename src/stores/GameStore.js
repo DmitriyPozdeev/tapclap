@@ -133,9 +133,11 @@ export default class GameStore {
   checkEndGame() {
     if(this.root.user.points >= this.minWinPoints) {
       this.root.user.setStatus('win')
+      return
     } 
     else if(this.root.user.movesCount === this.moves) {
       this.root.user.setStatus('lose')
+      return
     }
     if(!this.root.tile.checkList() && 
     this.root.user.mixCount === this.mixes){
