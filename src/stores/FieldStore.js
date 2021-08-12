@@ -16,10 +16,10 @@ export default class FieldStore {
     })
   }
   initCells() {
-    for (let i = 0; i < this.size.rows; i++) {
-      for (let j = 0; j < this.size.cols; j++) {
+    for (let row = 0; row < this.size.rows; row++) {
+      for (let col = 0; col < this.size.cols; col++) {
         this.cells.push(
-          new Cell(this, i, j)
+          new Cell(this, row, col)
         ) 
       }
     }
