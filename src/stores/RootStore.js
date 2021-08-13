@@ -4,7 +4,6 @@ import GameStore from './GameStore'
 import TileStore from './TileStore'
 import FieldStore from './FieldStore'
 import UIStore from './UIStore'
-import StateMachine from 'javascript-state-machine'
 
 export default class RootStore {
   constructor() {
