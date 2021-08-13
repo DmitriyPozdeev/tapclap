@@ -4,6 +4,7 @@ import GameStore from './GameStore'
 import TileStore from './TileStore'
 import FieldStore from './FieldStore'
 import UIStore from './UIStore'
+import StateMachine from 'javascript-state-machine'
 
 export default class RootStore {
   constructor() {
@@ -14,6 +15,7 @@ export default class RootStore {
     this.ui = new UIStore(this)
     makeAutoObservable(this) 
   }
+
   randomNum(max) {
     return Math.floor(Math.random() * max) 
   }
