@@ -27,7 +27,7 @@ export default class FieldStore {
   setAnimate(bool) {
     this._isAnimate = bool
   }
-  defineTargetCell(e) {
+  _defineTargetCell(e) {
     const eventCoord = {
       x: e.clientX - this.root.game.canvasCoord.x,
       y: e.clientY - this.root.game.canvasCoord.y,
@@ -44,11 +44,10 @@ export default class FieldStore {
   }
   click(e) {
     const cols = this.size.cols
-    const targetCell = this.defineTargetCell(e)
+    const targetCell = this._defineTargetCell(e)
     const { index } = targetCell
     const delIndexes = this.root.game.searchValidTiles(index)
     const amountDelIndexes = delIndexes.length
-
     if(amountDelIndexes > 0 && !this.isAnimate) {
       this.setAnimate(true)
       this.root.tile.setCurrentDelete(delIndexes)

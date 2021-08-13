@@ -18,7 +18,7 @@ const Modal = observer(() => {
     if(root.user.status !== 'mix') {
       root.user.reset()
     }
-    else if(root.user.status === 'mix') {
+    else if(root.user.status === 'mix' ) {
       setTimeout(() => {
         root.user.setMixCount()
         root.user.setStatus('process')

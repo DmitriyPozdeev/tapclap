@@ -15,9 +15,9 @@ export default class Cell {
       h: this.store.cellSize, 
     }
     this._index = this.store.size.cols * row + col
-    this._neighbors = this.getNeighbors()
+    this._neighbors = this._getNeighbors()
   }
-  deleteEffect(imageData) {
+  _deleteEffect(imageData) {
     const pixels = imageData.data;
     for (let i = 0; i < pixels.length; i += 16) {
       const r = pixels[i];
@@ -33,7 +33,7 @@ export default class Cell {
     this._image = this.store.root.game.context.getImageData(
       this.coord.xs, this.coord.ys, this.store.cellSize, this.store.cellSize
     )
-    this.deleteEffect(this._image)
+    this._deleteEffect(this._image)
   }
   animateImage() {
     this.store.root.game.context.putImageData(
@@ -55,7 +55,7 @@ export default class Cell {
       h: this.store.cellSize, 
     }
   }
-  getNeighbors() {
+  _getNeighbors() {
     const index = this.index
     const cols = this.store.size.cols
     const cellsAmount = this.store.cellsAmount
