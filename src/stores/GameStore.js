@@ -68,7 +68,6 @@ export default class GameStore {
             if(tile.xs === xs){
               this.setStopCounter(currentIndex)
               tile.index = currentIndex
-              this.root.field.cells[currentIndex].reset()
               if(this.equalityCounters()){
                 this.root.field.setAnimate(false)
                 this.clearStartStopCounters()
@@ -92,15 +91,13 @@ export default class GameStore {
   }
 
   renderDelete() {
-    if(this.root.field.isAnimate) {
-      this.root.field.cells.forEach(cell => {
-        const { index } = cell
-        if (cell.image && 
-        this.root.tile.currentDelete.includes(index)) {
-          cell.animateImage()
-        }
-      })
-    }
+    this.root.field.cells.forEach(cell => {
+      const { index } = cell
+      if (cell.image && 
+      this.root.tile.currentDelete.includes(index)) {
+        cell.animateImage()
+      }
+    })
   }
   renderTiles() {
     this.root.tile.currentList.forEach((row) => {

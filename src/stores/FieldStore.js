@@ -49,9 +49,7 @@ export default class FieldStore {
     const delIndexes = this.root.game.searchValidTiles(index)
     const amountDelIndexes = delIndexes.length
     if(amountDelIndexes > 0 && !this.isAnimate) {
-      this.setAnimate(true)
       this.root.tile.setCurrentDelete(delIndexes)
-      
       this.root.tile.currentList.forEach((row, numRow) => {
         row.forEach((_, numCol) => {
           if (this.root.tile.currentDelete
@@ -61,17 +59,13 @@ export default class FieldStore {
           }
         })
       })
-
       const newTileList = this.root.tile.currentList
         .map((row) => {
           return row.filter(tile => tile)
         })
-
-      setTimeout(() => {
-        this.root.user.setPoints(amountDelIndexes)
-        this.root.user.setMovesCount()
-        this.root.tile.setCurrentList(newTileList)
-      }, 250)
+      this.root.user.setPoints(amountDelIndexes)
+      this.root.user.setMovesCount()
+      this.root.tile.setCurrentList(newTileList)
     }
   }  
   get cellsAmount() {

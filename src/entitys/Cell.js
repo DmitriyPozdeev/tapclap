@@ -45,6 +45,10 @@ export default class Cell {
       this._animateData.w >= 0 ? this._animateData.w -= 3 : 0,
       this._animateData.h >= 0 ? this._animateData.h -= 3 : 0,
     )
+    if(this._animateData.w === 0 && this._animateData.h === 0) {
+      this.reset()
+      this.store.setAnimate(true)
+    }
   }
   reset() {
     this._image = null
